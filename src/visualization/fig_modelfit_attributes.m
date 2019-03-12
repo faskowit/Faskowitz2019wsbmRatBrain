@@ -16,6 +16,15 @@ loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_baseRes.ma
 % loads a struct named 'baseRes'
 load(loadName) ;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% fig stuff
+
+FIGURE_NAME = 'figModelfitting' ;
+outputdir = strcat(PROJECT_DIR,'/reports/figures/',FIGURE_NAME,'/');
+mkdir(outputdir) 
+
+writeit = 0 ;
+
 %% plot what we got
 
 figure
@@ -45,4 +54,47 @@ ylim = get(gca,'Ylim') ;
 
 plot([baseRes.wsbm.bestK baseRes.wsbm.bestK],ylim,'r','LineStyle',':','LineWidth',2)
 
+%%
+
+if writeit 
+    fileName = strcat('logevidence_K.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+%     fileName = strcat('logevidence_K_2.png');
+%     ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+%     export_fig(ff,'-png')
+    close(gcf)
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+
+ca_at_Kbest = baseRes.wsbm.ca_K{baseRes.wsbm.bestKind} ;
+caDistances = sum(partition_distance(ca_at_Kbest),2) ;
+
+logEvid_at_Kbest = baseRes.wsbm.logEvid_K{baseRes.wsbm.bestKind} ;
+
+medianLogEvid = median(logEvid_at_Kbest) ;
+medianDist = median(caDistances) ;
+
+% get indicies for top quadrant
+optQuadInd = (logEvid_at_Kbest > medianLogEvid) & (caDistances < medianDist) ;  
+
+% viz it
+figure
+scatter(logEvid_at_Kbest,caDistances,[],optQuadInd)
+colormap(brewermap(2,'Paired')) ;
+ylabel('VI Distance') 
+xlabel('Model Log Evidence')
+
+set(gca,'FontSize',16)
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.5, 0.5]);
+pbaspect([1 1 1])
+
+if writeit 
+    fileName = strcat('topModels.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+    close(gcf)
+end
 
