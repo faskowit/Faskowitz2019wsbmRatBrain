@@ -13,7 +13,7 @@ run(config_file);
 loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_baseRes.mat' ] ;
 load(loadName) ;
 
-loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_consensusRuns.mat' ] ;
+loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_consensusCAs.mat' ] ;
 load(loadName) ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -23,23 +23,20 @@ FIGURE_NAME = 'figComms' ;
 outputdir = strcat(PROJECT_DIR,'/reports/figures/',FIGURE_NAME,'/');
 mkdir(outputdir) 
 
-writeit = 0 ;
+writeit = 1 ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% image with the comms
 
-conModel = consensusCent ;
+figure
 
-nComm = size(conModel.Para.mu,1) ;
-ca_wsbm = wsbm_community_assign(conModel) ;
+nComm = length(unique(cons_ca.wsbm));
 
 comm_cmap = brewermap(nComm,'Spectral') ;
 
-[newinds,breaks] = wsbm_plot_mat(conModel,[],'mod') ;
+[~,breaks] = wsbm_plot_mat(baseRes.rawData,dummyvar(cons_ca.wsbm)','') ;
 hold on
-ca_wsbm_ra = lab_reassign(ca_wsbm,newinds) ;
-
-viz_comms_on_axes(ca_wsbm_ra,comm_cmap)
+viz_comms_on_axes(cons_ca.wsbm,comm_cmap)
        
 xticks([])
 yticks([]) 
@@ -73,13 +70,10 @@ end
 
 figure
 
-ca_mod = baseRes.bestKcentmod ;
-ca_mod = hungarianMatch(ca_wsbm_ra,ca_mod) ;
-
-[newinds,breaks] = wsbm_plot_mat(conModel.Data.Raw_Data,dummyvar(ca_mod)','') ;
+[newinds,breaks] = wsbm_plot_mat(baseRes.rawData,dummyvar(cons_ca.mod)','') ;
 hold on
 
-viz_comms_on_axes(ca_mod,comm_cmap)
+viz_comms_on_axes(cons_ca.mod,comm_cmap)
        
 xticks([])
 yticks([]) 
