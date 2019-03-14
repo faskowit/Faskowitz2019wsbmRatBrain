@@ -66,6 +66,38 @@ if writeit
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% wsbm block matrix
+
+[~,avgBl] = get_block_mat(baseRes.rawData, cons_ca.wsbm) ;
+
+%Plot the Matrix
+h = imagesc(avgBl,[min(avgBl(:))-.00001,max(avgBl(:))]);
+set(h,'alphadata',avgBl~=0);
+colorbar();
+axis square
+
+hold on
+viz_comms_on_axes((1:10)',comm_cmap)
+
+xticks([])
+yticks([]) 
+
+set(gca,'ytick',(1:10))
+set(gca,'yticklabel',{1:nComm})
+set(gca,'ticklength',[ 0 0]) 
+
+set(gca,'FontSize',15)
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.5, 0.5]);
+pbaspect([1 1 1])
+
+if writeit
+    fileName = strcat('wsbm_blockMat_comms.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+    close(gcf)
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% and mod
 
 figure
@@ -102,3 +134,34 @@ if writeit
     close(gcf)
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% mod block matrix
+
+[~,avgBl] = get_block_mat(baseRes.rawData, cons_ca.mod) ;
+
+%Plot the Matrix
+h = imagesc(avgBl,[min(avgBl(:))-.00001,max(avgBl(:))]);
+set(h,'alphadata',avgBl~=0);
+colorbar();
+axis square
+
+hold on
+viz_comms_on_axes((1:10)',comm_cmap)
+
+xticks([])
+yticks([]) 
+
+set(gca,'ytick',(1:10))
+set(gca,'yticklabel',{1:nComm})
+set(gca,'ticklength',[ 0 0]) 
+
+set(gca,'FontSize',15)
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.5, 0.5]);
+pbaspect([1 1 1])
+
+if writeit
+    fileName = strcat('mod_blockMat_comms.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+    close(gcf)
+end
