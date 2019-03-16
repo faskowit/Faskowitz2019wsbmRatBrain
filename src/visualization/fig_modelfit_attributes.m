@@ -25,7 +25,25 @@ mkdir(outputdir)
 
 writeit = 0 ;
 
+fontsize = 16 ;
+
+% general graphics, this will apply to any figure you open
+% (groot is the default figure object).
+set(groot, ...
+'DefaultFigureColor', 'w', ...
+'DefaultAxesFontSize', 14, ...
+'DefaultAxesFontName', 'Arial', ...
+'DefaultLineLineWidth', 1, ...
+'DefaultTextFontUnits', 'Points', ...
+'DefaultTextFontSize', 16, ...
+'DefaultTextFontName', 'Arial', ...
+'DefaultAxesBox', 'off', ...
+'DefaultAxesTickLength', [0.02 0.025]);
+
+
 %% plot what we got
+
+rng(123)
 
 figure
 set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.3, 0.5]);
@@ -44,25 +62,23 @@ end
 
 cb = colorbar ;
 cb.Label.String = 'VI distance' ;
+cb.Label.FontSize = 16 ;
 
-xlabel('Number of communities ({\itk})')
-ylabel('Model log evidence')
+xl = xlabel('Number of communities ({\itk})') ;
+xl.FontSize = fontsize ;
+yl = ylabel('Model log evidence') ;
+yl.FontSize = fontsize ;
 
-set(gca,'FontSize',16)
+%set(gca,'FontSize',16)
 
 ylim = get(gca,'Ylim') ;
 
 plot([baseRes.wsbm.bestK baseRes.wsbm.bestK],ylim,'r','LineStyle',':','LineWidth',2)
 
-%%
-
 if writeit 
     fileName = strcat('logevidence_K.png');
     ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
     print(gcf,'-dpng','-r500',ff);
-%     fileName = strcat('logevidence_K_2.png');
-%     ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
-%     export_fig(ff,'-png')
     close(gcf)
 end
 
@@ -84,12 +100,15 @@ optQuadInd = (logEvid_at_Kbest > medianLogEvid) & (caDistances < medianDist) ;
 figure
 scatter(logEvid_at_Kbest,caDistances,[],optQuadInd)
 colormap(brewermap(2,'Paired')) ;
-ylabel('VI Distance') 
-xlabel('Model Log Evidence')
+yl = ylabel('VI Distance') ;
+xl = xlabel('Model Log Evidence') ;
+yl.FontSize = fontsize ;
+xl.FontSize = fontsize ;
 
-set(gca,'FontSize',16)
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.5, 0.5]);
-pbaspect([1 1 1])
+axis square
+
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.38, 0.5]);
+tightfig
 
 if writeit 
     fileName = strcat('topModels.png');

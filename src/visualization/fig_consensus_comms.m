@@ -25,16 +25,37 @@ mkdir(outputdir)
 
 writeit = 1 ;
 
+fontsize = 16 ;
+
+% general graphics, this will apply to any figure you open
+% (groot is the default figure object).
+set(groot, ...
+'DefaultFigureColor', 'w', ...
+'DefaultAxesFontSize', 14, ...
+'DefaultAxesFontName', 'Arial', ...
+'DefaultLineLineWidth', 1, ...
+'DefaultTextFontUnits', 'Points', ...
+'DefaultTextFontSize', 16, ...
+'DefaultTextFontName', 'Arial', ...
+'DefaultAxesBox', 'off', ...
+'DefaultAxesTickLength', [0.02 0.025]);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% image with the comms
 
+comTypes = { 'wsbm' 'mod' } ;
+
+for cmTyp = 1:length(comTypes)
+    
 figure
 
-nComm = length(unique(cons_ca.wsbm));
+thisComm = cons_ca.(comTypes{cmTyp}) ;
+
+nComm = length(unique(thisComm));
 
 comm_cmap = brewermap(nComm,'Spectral') ;
 
-[~,breaks] = wsbm_plot_mat(baseRes.rawData,dummyvar(cons_ca.wsbm)','') ;
+[~,breaks] = wsbm_plot_mat(baseRes.rawData,dummyvar(thisComm)','') ;
 hold on
 viz_comms_on_axes(cons_ca.wsbm,comm_cmap)
        
@@ -54,90 +75,33 @@ set(gca,'ticklength',[ 0 0])
 
 hold off
 
-set(gca,'FontSize',15)
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.5, 0.5]);
+set(gca,'FontSize',fontsize)
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.5]);
 pbaspect([1 1 1])
 
+%tightfig
+
 if writeit
-    fileName = strcat('wsbm_comms.png');
+    fileName = strcat(comTypes{cmTyp}, '_comms.png');
     ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
     print(gcf,'-dpng','-r500',ff);
     close(gcf)
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% wsbm block matrix
-
-[~,avgBl] = get_block_mat(baseRes.rawData, cons_ca.wsbm) ;
-
-%Plot the Matrix
-h = imagesc(avgBl,[min(avgBl(:))-.00001,max(avgBl(:))]);
-set(h,'alphadata',avgBl~=0);
-colorbar();
-axis square
-
-hold on
-viz_comms_on_axes((1:10)',comm_cmap)
-
-xticks([])
-yticks([]) 
-
-set(gca,'ytick',(1:10))
-set(gca,'yticklabel',{1:nComm})
-set(gca,'ticklength',[ 0 0]) 
-
-set(gca,'FontSize',15)
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.5, 0.5]);
-pbaspect([1 1 1])
-
-if writeit
-    fileName = strcat('wsbm_blockMat_comms.png');
-    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
-    print(gcf,'-dpng','-r500',ff);
-    close(gcf)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% and mod
+%% block matrix
+
+ca_lim = [ 0 0.5 ] ;
+
+for cmTyp = 1:length(comTypes)
 
 figure
-
-[newinds,breaks] = wsbm_plot_mat(baseRes.rawData,dummyvar(cons_ca.mod)','') ;
-hold on
-
-viz_comms_on_axes(cons_ca.mod,comm_cmap)
-       
-xticks([])
-yticks([]) 
-
-% compute some yticks
-breaks2 = [ 0 breaks ] ;
-midlabelpoint = zeros([nComm 1]);
-for idx = 1:length(breaks)
-midlabelpoint(idx) = floor( (breaks2(idx+1) - breaks2(idx)) / 2) + breaks2(idx);  
-end
-
-set(gca,'ytick',midlabelpoint)
-set(gca,'yticklabel',{1:nComm})
-set(gca,'ticklength',[ 0 0]) 
-
-hold off
-
-set(gca,'FontSize',15)
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.5, 0.5]);
-pbaspect([1 1 1])
-
-if writeit 
-    fileName = strcat('mod_comms.png');
-    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
-    print(gcf,'-dpng','-r500',ff);
-    close(gcf)
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% mod block matrix
-
-[~,avgBl] = get_block_mat(baseRes.rawData, cons_ca.mod) ;
+    
+thisComm = cons_ca.(comTypes{cmTyp}) ;
+    
+[~,avgBl] = get_block_mat(baseRes.rawData, thisComm) ;
 
 %Plot the Matrix
 h = imagesc(avgBl,[min(avgBl(:))-.00001,max(avgBl(:))]);
@@ -148,6 +112,8 @@ axis square
 hold on
 viz_comms_on_axes((1:10)',comm_cmap)
 
+caxis(ca_lim)
+
 xticks([])
 yticks([]) 
 
@@ -155,13 +121,18 @@ set(gca,'ytick',(1:10))
 set(gca,'yticklabel',{1:nComm})
 set(gca,'ticklength',[ 0 0]) 
 
-set(gca,'FontSize',15)
+set(gca,'FontSize',fontsize)
 set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.5, 0.5]);
 pbaspect([1 1 1])
 
+%tf = tightfig
+
 if writeit
-    fileName = strcat('mod_blockMat_comms.png');
+    fileName = strcat(comTypes{cmTyp} , '_blockMat_comms.png');
     ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
     print(gcf,'-dpng','-r500',ff);
     close(gcf)
 end
+
+end
+
