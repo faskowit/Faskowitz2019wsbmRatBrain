@@ -117,3 +117,55 @@ if writeit
     close(gcf)
 end
 
+%% plot what we got for modularity
+
+dat = baseRes.rawData ;
+dat(isnan(dat)) = 0 ;
+
+rng(123)
+
+figure
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.3, 0.5]);
+
+% !!! instead, use the Q that comes out of gen louvain !!! 
+% tmpMods = cell(length(COM_NUM_RANGE),1) ;
+% for idx = 1:length(COM_NUM_RANGE)
+% 
+%     tmpCAs = baseRes.mod.ca_K{idx} ;
+%     tmpMods{idx} = zeros(size(tmpCAs,2),1) ;
+%     for jdx = 1:size(tmpCAs,2)
+%        tmpMods{idx}(jdx) = modularity_q(dat,tmpCAs(:,jdx)) ;
+%     end
+% end
+
+for idx = 1:length(COM_NUM_RANGE)
+
+   tmpData = baseRes.mod.caQs_K{idx} ;
+   
+   tmpDists = mean(partition_distance(baseRes.mod.ca_K{idx}),2); 
+   
+   scatter(COM_NUM_RANGE(idx) .* ones(length(tmpData),1) + (0.4).*rand(length(tmpData),1) -0.2 ,...
+       tmpData,[],tmpDists,'MarkerFaceAlpha',.5,'MarkerEdgeAlpha',.7)
+   hold on
+   
+end
+
+cb = colorbar ;
+cb.Label.String = 'VI distance' ;
+cb.Label.FontSize = 16 ;
+
+xl = xlabel('Number of communities ({\itk})') ;
+xl.FontSize = fontsize ;
+yl = ylabel('Modularity') ;
+yl.FontSize = fontsize ;
+
+%set(gca,'FontSize',16)
+%ylim = get(gca,'Ylim') ;
+%plot([baseRes.wsbm.bestK baseRes.wsbm.bestK],ylim,'r','LineStyle',':','LineWidth',2)
+
+if writeit 
+    fileName = strcat('modularity_K.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+    close(gcf)
+end
