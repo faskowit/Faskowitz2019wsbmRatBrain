@@ -17,14 +17,129 @@ load(loadName) ;
 loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_motifAna.mat' ] ;
 load(loadName) ;
 
+loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_consensusCAs.mat' ] ;
+load(loadName) ;
+
+loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_versatilityRes.mat' ] ;
+load(loadName) ;
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% entropy across K
+
+commNames = { 'wsbm' 'mod' } ;
+
+entr_K = struct() ;
+entr_K.wsbm.ent = cell(size(baseRes.wsbm.ca_K,1),1) ;
+entr_K.mod.ent = cell(size(baseRes.wsbm.ca_K,1),1) ;
+
+entr_K.wsbm.sum = cell(size(baseRes.wsbm.ca_K,1),1) ;
+entr_K.mod.sum = cell(size(baseRes.wsbm.ca_K,1),1) ;
+
+for idx = 1:length(entr_K.wsbm.ent) 
+
+    for cn = 1:length(commNames)
+    
+        tmpMot = motifAna.(commNames{cn}).motifEdgeMats{idx} ;
+
+        entr_K.(commNames{cn}).ent{idx} = get_comm_motif_entropy(mean(tmpMot.aMat>0,3),...
+                                mean(tmpMot.cMat>0,3),...
+                                mean(tmpMot.pMat>0,3),...
+                                mean(tmpMot.dMat>0,3),...
+                                mean(tmpMot.odMat>0,3) ) ;    
+        entr_K.(commNames{cn}).sum{idx} = ( sum(entr_K.(commNames{cn}).ent{idx})' + ...
+                                sum(entr_K.(commNames{cn}).ent{idx},2) ) ./ 2 ;
+       
+    end                                         
+end
+   
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% lets look at the edge-wise vals
 
-wsbm_od_probs = mean(motifAna.motifEdgeMats{10}.odMat > 0,3) ;
-mod_od_probs = mean(modMotifAna.motifEdgeMats{10}.odMat > 0,3) ;
+nanEdges = isnan(baseRes.rawData) ;
 
-wsbm_a_probs = mean(motifAna.motifEdgeMats{10}.aMat > 0,3) ;
-mod_a_probs = mean(modMotifAna.motifEdgeMats{10}.aMat > 0,3) ;
+sss = sortedInd(cons_ca.wsbm) ;
+sss2 = sortedInd(cons_ca.mod) ;
+
+curScale = baseRes.wsbm.bestKind ;
+
+edgeMats = { 'odMat' 'aMat' 'cMat' 'pMat' 'dMat' } ;
+
+for idx = 1:length(edgeMats)
+
+    tmp = mean(motifAna.wsbm.motifEdgeMats{curScale}.(edgeMats{idx}) > 0,3) ;
+    subplot(2,6,idx) ; 
+    h = imagesc(tmp(sss,sss)); caxis([0 1])
+    %set(h,'alphadata',nanEdges==0);
+end
+subplot(266) ; 
+h = imagesc( entr_K.wsbm.ent{curScale}(sss,sss) ) ; colorbar
+set(h,'alphadata',nanEdges==0);
+
+for idx = 1:length(edgeMats)
+
+    tmp = mean(motifAna.mod.motifEdgeMats{curScale}.(edgeMats{idx}) > 0,3) ;
+    subplot(2,6,idx+6) ; 
+    h= imagesc(tmp(sss2,sss2)); caxis([0 1])
+    %set(h,'alphadata',nanEdges==0);
+end
+subplot(2,6,12) ;  
+h = imagesc( entr_K.mod.ent{curScale}(sss2,sss2) ) ; colorbar
+set(h,'alphadata',nanEdges==0);
+
+%%
+
+dat = baseRes.rawData ;
+dat(isnan(dat)) = 0 ;
+
+weis = strengths_dir(dat) ;
+clustc = clustering_coef_wd(dat) ;
+
+wsbmSum = ( sum(entr_K.wsbm{curScale})' + sum(entr_K.wsbm{curScale},2) ) ./ 2 ;
+modSum = ( sum(entr_K.mod{curScale})' + sum(entr_K.mod{curScale},2) ) ./ 2  ;
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+
+oo = cellfun(@(x)sum(sum(x)),entr_K.mod,'UniformOutput',true) ;
+
+iii = [ 1 REASONABLE_COM_RANGE_IND] ;
+
+scatter(iii,oo(iii))
+
+%%
+
+mmm = zeros(length(REASONABLE_COM_RANGE_IND),length(REASONABLE_COM_RANGE_IND)) ;
+mmm2 = zeros(length(REASONABLE_COM_RANGE_IND),length(REASONABLE_COM_RANGE_IND)) ;
+
+
+for idx = 1:length(REASONABLE_COM_RANGE_IND)
+    
+    for jdx = 1:length(REASONABLE_COM_RANGE_IND)
+    
+        ind = REASONABLE_COM_RANGE_IND(idx) ;
+
+        w_ent1 = entr_K.wsbm.sum{idx} ;
+        m_ent1 = entr_K.mod.sum{idx} ;
+        
+        w_ent2 = entr_K.wsbm.sum{jdx} ;
+        m_ent2 = entr_K.mod.sum{jdx} ;
+ 
+        mmm(idx,jdx) = corr(w_ent1,w_ent2) ;
+        mmm2(idx,jdx) = corr(m_ent1,m_ent2) ;
+       
+    end
+end
+
+%%
+
+wsbm_od_probs = mean(motifAna.wsbm.motifEdgeMats{10}.odMat > 0,3) ;
+mod_od_probs = mean(motifAna.mod.motifEdgeMats{10}.odMat > 0,3) ;
+
+wsbm_a_probs = mean(motifAna.wsbm.motifEdgeMats{10}.aMat > 0,3) ;
+mod_a_probs = mean(motifAna.mod.motifEdgeMats{10}.aMat > 0,3) ;
 
 dat = CIJ .* 1; 
 dat(isnan(dat)) = 0 ;
@@ -43,7 +158,7 @@ imagesc(mod_a_probs)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 
 
-curScale = motifAna.motifEdgeMats{10} ;
+curScale = motifAna.wsbm.motifEdgeMats{baseRes.wsbm.bestKind} ;
 
 ttt = get_comm_motif_entropy(mean(curScale.aMat>0,3),mean(curScale.cMat>0,3),...
                              mean(curScale.pMat>0,3),mean(curScale.dMat>0,3)) ;
@@ -56,6 +171,11 @@ ttt2(isnan(ttt2)) = 0 ;
 
 [~,~,mmm] = matching_ind(dat) ;
 mmm = mmm + mmm' ;                         
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
+pp = mean(curScale.aMat>0,3) + mean(curScale.cMat>0,3) + mean(curScale.pMat>0,3) + mean(curScale.dMat>0,3) + mean(curScale.odMat>0,3)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% now lets compare each profile 

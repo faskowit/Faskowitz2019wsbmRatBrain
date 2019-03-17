@@ -20,8 +20,8 @@ load(loadName) ;
 %% get versatility per node, at each level
 
 % initialize a variable
-versWSBM = cell(length(COM_NUM_RANGE),1) ;
-versMOD = cell(length(COM_NUM_RANGE),1) ;
+vers.wsbm = cell(length(COM_NUM_RANGE),1) ;
+vers.mod = cell(length(COM_NUM_RANGE),1) ;
 
 dat = baseRes.rawData ;
 dat(isnan(dat)) = 0 ;
@@ -33,8 +33,8 @@ for idx = 1:length(COM_NUM_RANGE)
     tmpWSBMCa = baseRes.wsbm.ca_K{idx} ;
     tmpMODCa = baseRes.mod.ca_K{idx} ;
     
-    versWSBM{idx} = get_nodal_versatility(tmpWSBMCa)' ;
-    versMOD{idx} = get_nodal_versatility(tmpMODCa)' ;
+    vers.wsbm{idx} = get_nodal_versatility(tmpWSBMCa)' ;
+    vers.mod{idx} = get_nodal_versatility(tmpMODCa)' ;
 
 end
 
@@ -85,8 +85,7 @@ end
 saveName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_versatilityRes.mat' ] ;
 % loads a struct named 'baseRes'
 save(saveName,...
-    'versWSBM','versMOD')
-%    'verResuktsWSBM','verResuktsMOD' ) ;
+    'vers')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% lets plot

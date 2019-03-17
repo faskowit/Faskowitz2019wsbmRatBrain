@@ -108,3 +108,5 @@ scratch/*
 data/doc/
 *png
 reports/
+src/scratch/
+src/scratch/*
