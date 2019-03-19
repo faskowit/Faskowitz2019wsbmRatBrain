@@ -107,8 +107,31 @@ xl.FontSize = fontsize ;
 
 axis square
 
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.38, 0.5]);
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.4, 0.5]);
 tightfig
+
+%qucik stats
+% function [xvalR2, xvalsqErr, yhatLOOCV, coefStruct , lsFitStruct , permStruct ] = ... 
+%    nc_FitAndEvaluateModels(y, x, model, crossvalidate, bootIter, params , permIter)
+
+[r2,~,~,coefs] = nc_FitAndEvaluateModels(caDistances, logEvid_at_Kbest, ...
+                    'linear', 1, 5000) ;
+
+% get the confidence intervals
+xVec = min(coefs.x):0.05:...
+    max(coefs.x);
+bootCI = zeros(size(coefs.boot,1),length(xVec)) ;
+for idx = 1:size(coefs.boot,1)
+    bootCI(idx,:) = polyval(coefs.boot(idx,:),xVec);  
+end
+p95 = prctile(bootCI,[2.5,97.5]);    
+hold on;
+fill([xVec fliplr(xVec)],[p95(1,:) fliplr(p95(2,:))],[ 0.75 0.75 0.75 ],'facealpha',.7,'edgealpha',0);
+
+% and the line
+yhat = polyval(coefs.full,xVec); 
+plot(xVec,yhat,'Color',[0.8 0.8 0.8],'linewidth',2);
+
 
 if writeit 
     fileName = strcat('topModels.png');

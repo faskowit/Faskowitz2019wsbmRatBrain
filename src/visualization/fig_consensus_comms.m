@@ -23,7 +23,7 @@ FIGURE_NAME = 'figComms' ;
 outputdir = strcat(PROJECT_DIR,'/reports/figures/',FIGURE_NAME,'/');
 mkdir(outputdir) 
 
-writeit = 1 ;
+writeit = 0 ;
 
 fontsize = 16 ;
 
@@ -57,7 +57,7 @@ comm_cmap = brewermap(nComm,'Spectral') ;
 
 [~,breaks] = wsbm_plot_mat(baseRes.rawData,dummyvar(thisComm)','') ;
 hold on
-viz_comms_on_axes(cons_ca.wsbm,comm_cmap)
+viz_comms_on_axes(cons_ca.(comTypes{cmTyp}),comm_cmap)
        
 xticks([])
 yticks([]) 
