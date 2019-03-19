@@ -56,6 +56,15 @@ if ~exist('userEvalFuncs','var') || isempty(userEvalFuncs)
     evalFuncs{5} = @(A) betweenness_bin(A)' ;
 
 else
+    if ~iscell(userEvalFuncs)
+       error('user eval funcs should come as cell array') 
+    end
+    
+    for idx = 1:length(userEvalFuncs)
+        if ~isa(userEvalFuncs{idx},'function_handle')
+            error('not function handle')
+        end
+    end
     evalFuncs = userEvalFuncs ;
 end
 
@@ -116,7 +125,9 @@ for idx = 1:numSims
         end
     end
     
-    disp(idx)
+    if mod(idx,100) == 0
+        disp([ int2str(idx) ' out of ' int2str(numSims) ])
+    end
 end
 
 E = max(K,[],2);
