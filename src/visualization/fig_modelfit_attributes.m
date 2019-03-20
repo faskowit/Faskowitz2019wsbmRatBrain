@@ -16,6 +16,10 @@ loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_baseRes.ma
 % loads a struct named 'baseRes'
 load(loadName) ;
 
+loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_consensusCAs.mat' ] ;
+% loads a struct named 'baseRes'
+load(loadName) ;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% fig stuff
 
@@ -86,7 +90,7 @@ end
 %% 
 
 ca_at_Kbest = baseRes.wsbm.ca_K{baseRes.wsbm.bestKind} ;
-caDistances = sum(partition_distance(ca_at_Kbest),2) ;
+caDistances = mean(partition_distance(ca_at_Kbest),2) ;
 
 logEvid_at_Kbest = baseRes.wsbm.logEvid_K{baseRes.wsbm.bestKind} ;
 
@@ -98,8 +102,16 @@ optQuadInd = (logEvid_at_Kbest > medianLogEvid) & (caDistances < medianDist) ;
 
 % viz it
 figure
-scatter(logEvid_at_Kbest,caDistances,[],optQuadInd)
-colormap(brewermap(2,'Paired')) ;
+s = scatter(logEvid_at_Kbest(~optQuadInd),caDistances(~optQuadInd),...
+    [],caDistances(~optQuadInd),'filled') ;
+%colormap([ 0.4 0.4 0.4 ; 0.8 0.8 0.8] ) ;
+s.MarkerFaceAlpha = .25 ;
+hold on
+s = scatter(logEvid_at_Kbest(optQuadInd),caDistances(optQuadInd),...
+    [],caDistances(optQuadInd),'filled') ;
+%colormap([ 0.4 0.4 0.4 ; 0.8 0.8 0.8] ) ;
+s.MarkerFaceAlpha = .95 ;
+
 yl = ylabel('VI Distance') ;
 xl = xlabel('Model Log Evidence') ;
 yl.FontSize = fontsize ;
@@ -130,7 +142,7 @@ fill([xVec fliplr(xVec)],[p95(1,:) fliplr(p95(2,:))],[ 0.75 0.75 0.75 ],'facealp
 
 % and the line
 yhat = polyval(coefs.full,xVec); 
-plot(xVec,yhat,'Color',[0.8 0.8 0.8],'linewidth',2);
+plot(xVec,yhat,'Color',[0.5 0.5 0.5],'linewidth',2.5);
 
 
 if writeit 
@@ -192,3 +204,53 @@ if writeit
     print(gcf,'-dpng','-r500',ff);
     close(gcf)
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% plot the communities
+
+figure 
+
+nComm = baseRes.wsbm.bestK ;
+comm_cmap = brewermap(nComm,'Spectral') ;
+
+wsbmCaBest = zeros(size(baseRes.wsbm.ca_K{baseRes.wsbm.bestKind})) ;
+wsbmCaBestLogE = baseRes.wsbm.logEvid_K{baseRes.wsbm.bestKind} ;
+modCaBest = zeros(size(baseRes.mod.ca_K{baseRes.wsbm.bestKind})) ;
+modCaBestLogE = baseRes.mod.caQs_K{baseRes.wsbm.bestKind} ;
+
+nRep = size(wsbmCaBest,2) ;
+
+for idx = 1:nRep 
+    wsbmCaBest(:,idx) = hungarianMatch(cons_ca.wsbm,...
+        baseRes.wsbm.ca_K{baseRes.wsbm.bestKind}(:,idx)) ;
+end
+for idx = 1:nRep 
+    modCaBest(:,idx) = hungarianMatch(cons_ca.mod,...
+        baseRes.mod.ca_K{baseRes.wsbm.bestKind}(:,idx)) ;
+end
+
+% tight_subplot(Nh, Nw, [gap_h gap_w], [lower upper], [left right])
+sp = tight_subplot(2,1,[ .035 .04 ],[.12 .033],[.1 .1]);
+
+axes(sp(1))
+imagesc(wsbmCaBest(:,sortedInd(wsbmCaBestLogE))) ;
+set(gca,'XTickLabel',[])
+cmap_labs_discrete(1:nComm)
+
+axes(sp(2))
+imagesc(modCaBest(:,sortedInd(modCaBestLogE))) ;
+
+colormap(comm_cmap) ;
+cmap_labs_discrete(1:nComm)
+
+if writeit 
+    fileName = strcat('aligned_comms.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+    close(gcf)
+end
+
+
+
+
+
