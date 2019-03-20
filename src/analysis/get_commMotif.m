@@ -155,3 +155,39 @@ end
 
 saveName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_motifAna.mat' ] ;
 save(saveName,'CIJ','gather','motifAna','-v7.3') ;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% entropy across K
+
+commNames = { 'wsbm' 'mod' } ;
+
+entr_K = struct() ;
+entr_K.wsbm.ent = cell(size(baseRes.wsbm.ca_K,1),1) ;
+entr_K.mod.ent = cell(size(baseRes.wsbm.ca_K,1),1) ;
+
+entr_K.wsbm.sum = cell(size(baseRes.wsbm.ca_K,1),1) ;
+entr_K.mod.sum = cell(size(baseRes.wsbm.ca_K,1),1) ;
+
+for idx = 1:length(entr_K.wsbm.ent) 
+
+    for cn = 1:length(commNames)
+    
+        tmpMot = motifAna.(commNames{cn}).motifEdgeMats{idx} ;
+
+        entr_K.(commNames{cn}).ent{idx} = get_comm_motif_entropy(mean(tmpMot.aMat>0,3),...
+                                mean(tmpMot.cMat>0,3),...
+                                mean(tmpMot.pMat>0,3),...
+                                mean(tmpMot.dMat>0,3),...
+                                mean(tmpMot.odMat>0,3) ) ;    
+        entr_K.(commNames{cn}).sum{idx} = ( sum(entr_K.(commNames{cn}).ent{idx})' + ...
+                                sum(entr_K.(commNames{cn}).ent{idx},2) ) ./ 2 ;
+       
+    end                                         
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% save it
+
+saveName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_motifEntropy.mat' ] ;
+save(saveName,'entr_K','-v7.3') ;
+
