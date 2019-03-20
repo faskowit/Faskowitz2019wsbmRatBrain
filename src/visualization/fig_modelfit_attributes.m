@@ -86,8 +86,12 @@ if writeit
     close(gcf)
 end
 
+cax = caxis ;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 
+%% scatter
+
+rng(123)
 
 ca_at_Kbest = baseRes.wsbm.ca_K{baseRes.wsbm.bestKind} ;
 caDistances = mean(partition_distance(ca_at_Kbest),2) ;
@@ -102,10 +106,12 @@ optQuadInd = (logEvid_at_Kbest > medianLogEvid) & (caDistances < medianDist) ;
 
 % viz it
 figure
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.5, 0.5]);
+
 s = scatter(logEvid_at_Kbest(~optQuadInd),caDistances(~optQuadInd),...
     [],caDistances(~optQuadInd),'filled') ;
 %colormap([ 0.4 0.4 0.4 ; 0.8 0.8 0.8] ) ;
-s.MarkerFaceAlpha = .25 ;
+s.MarkerFaceAlpha = .20 ;
 hold on
 s = scatter(logEvid_at_Kbest(optQuadInd),caDistances(optQuadInd),...
     [],caDistances(optQuadInd),'filled') ;
@@ -119,13 +125,9 @@ xl.FontSize = fontsize ;
 
 axis square
 
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.4, 0.5]);
-tightfig
-
 %qucik stats
 % function [xvalR2, xvalsqErr, yhatLOOCV, coefStruct , lsFitStruct , permStruct ] = ... 
 %    nc_FitAndEvaluateModels(y, x, model, crossvalidate, bootIter, params , permIter)
-
 [r2,~,~,coefs] = nc_FitAndEvaluateModels(caDistances, logEvid_at_Kbest, ...
                     'linear', 1, 5000) ;
 
@@ -144,6 +146,11 @@ fill([xVec fliplr(xVec)],[p95(1,:) fliplr(p95(2,:))],[ 0.75 0.75 0.75 ],'facealp
 yhat = polyval(coefs.full,xVec); 
 plot(xVec,yhat,'Color',[0.5 0.5 0.5],'linewidth',2.5);
 
+%colorbar
+caxis(cax)
+
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.4, 0.5]);
+tightfig
 
 if writeit 
     fileName = strcat('topModels.png');
@@ -250,6 +257,10 @@ if writeit
     close(gcf)
 end
 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %% are there any communities of similar paritions?
+% 
+% wsbmAgree = agreement(wsbmCaBest) ;
 
 
 

@@ -20,7 +20,7 @@ load(loadName) ;
 loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_consensusCAs.mat' ] ;
 load(loadName) ;
 
-loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_versatilityRes.mat' ] ;
+loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_netstatsRes.mat' ] ;
 load(loadName) ;
 
 
@@ -52,7 +52,6 @@ for idx = 1:length(entr_K.wsbm.ent)
        
     end                                         
 end
-   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% lets look at the edge-wise vals
@@ -61,8 +60,11 @@ nanEdges = isnan(baseRes.rawData) ;
 
 sss = sortedInd(cons_ca.wsbm) ;
 sss2 = sortedInd(cons_ca.mod) ;
+% sss = 1:77 ;
+% sss2 = 1:77 ;
 
 curScale = baseRes.wsbm.bestKind ;
+curScale = 9 ;
 
 edgeMats = { 'odMat' 'aMat' 'cMat' 'pMat' 'dMat' } ;
 
@@ -74,8 +76,9 @@ for idx = 1:length(edgeMats)
     %set(h,'alphadata',nanEdges==0);
 end
 subplot(266) ; 
-h = imagesc( entr_K.wsbm.ent{curScale}(sss,sss) ) ; colorbar
-set(h,'alphadata',nanEdges==0);
+%h = imagesc( entr_K.wsbm.ent{curScale}(sss,sss) ) ; colorbar
+h = imsc_grid_comm( entr_K.wsbm.ent{curScale}, cons_ca.wsbm ) ; colorbar
+%set(h,'alphadata',nanEdges(sss,sss)==0);
 
 for idx = 1:length(edgeMats)
 
@@ -85,8 +88,10 @@ for idx = 1:length(edgeMats)
     %set(h,'alphadata',nanEdges==0);
 end
 subplot(2,6,12) ;  
-h = imagesc( entr_K.mod.ent{curScale}(sss2,sss2) ) ; colorbar
-set(h,'alphadata',nanEdges==0);
+%h = imagesc( entr_K.mod.ent{curScale}(sss2,sss2) ) ; colorbar
+h = imsc_grid_comm( entr_K.mod.ent{curScale}, cons_ca.mod ) ; colorbar
+
+%set(h,'alphadata',nanEdges(sss2,sss2)==0);
 
 %%
 
@@ -135,6 +140,14 @@ end
 
 %%
 
+curScale = baseRes.wsbm.bestKind ;
+
+ag_curScale = partition_distance(baseRes.wsbm.ca_K{curScale}) ; 
+
+cc = consensus_und(vi_curScale,0.1,100)
+
+%%
+
 wsbm_od_probs = mean(motifAna.wsbm.motifEdgeMats{10}.odMat > 0,3) ;
 mod_od_probs = mean(motifAna.mod.motifEdgeMats{10}.odMat > 0,3) ;
 
@@ -176,6 +189,8 @@ mmm = mmm + mmm' ;
 %%
 
 pp = mean(curScale.aMat>0,3) + mean(curScale.cMat>0,3) + mean(curScale.pMat>0,3) + mean(curScale.dMat>0,3) + mean(curScale.odMat>0,3)
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% now lets compare each profile 
