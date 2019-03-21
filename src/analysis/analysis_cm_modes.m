@@ -20,11 +20,11 @@ load(loadName) ;
 loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_consensusCAs.mat' ] ;
 load(loadName) ;
 
-loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_netstatsRes.mat' ] ;
-load(loadName) ;
-
-loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_motifEntropy.mat' ] ;
-load(loadName) ;
+% loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_netstatsRes.mat' ] ;
+% load(loadName) ;
+% 
+% loadName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_motifEntropy.mat' ] ;
+% load(loadName) ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% get data
@@ -54,20 +54,13 @@ for cn = 1:length(commNames)
     eMatMax = eMatMax .* ~nanE ;
 
     eMatStruct.(commNames{cn}).mode = get_block_mode(eMatMax,cons_ca.(commNames{cn}),0) ;
-
+    eMatStruct.(commNames{cn}).max = eMatMax ;
+    
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
+%% save it
 
-imsc_grid_comm(iii,cons_ca.wsbm)
-
-iii = iii .* ~nanE ;
-
-
-
-
-
-
-
+saveName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_commMotifModes.mat' ] ;
+save(saveName,'eMatStruct','-v7.3') ;
 
