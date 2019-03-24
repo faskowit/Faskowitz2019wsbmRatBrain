@@ -73,10 +73,10 @@ set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.5]);
 xticks([])
 yticks([]) 
 
-viz_comms_on_axes(cons_ca.(comTypes{cmTyp}), comm_cmap)
+%viz_comms_on_axes(cons_ca.(comTypes{cmTyp}), comm_cmap)
 viz_labs_on_axes(cons_ca.(comTypes{cmTyp}))
 
-%tightfig
+tightfig
 
 if writeit
     fileName = strcat(comTypes{cmTyp}, '_edge_modes.png');
