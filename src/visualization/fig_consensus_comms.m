@@ -136,3 +136,25 @@ end
 
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% and just visualize raw data
+
+%Plot the Matrix
+h = imagesc(baseRes.rawData);
+set(h,'alphadata',~isnan(baseRes.rawData));
+axis square
+
+xticks([])
+yticks([]) 
+
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.5, 0.5]);
+
+tightfig
+
+if writeit
+    fileName = strcat('rawData.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+    close(gcf)
+end
+
