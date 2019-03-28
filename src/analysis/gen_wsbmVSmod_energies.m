@@ -222,3 +222,48 @@ for idx = 1:5
     xl.FontSize = fontsize ;
     
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% stats
+
+rng(123)
+
+nBoot = 10000 ;
+nEnPerms = length(eval_wsbm_EMD) ;
+
+wsbm_emp_energy = mean(eval_wsbm_EMD,2) ;
+mod_emp_energy =mean(eval_mod_EMD,2) ;
+
+
+bootdiff = zeros(nBoot,1);
+% boot diff
+for idx=1:nBoot
+
+    tmpind = randi(nEnPerms,1,nEnPerms) ;
+    bootdiff(idx) = mean(wsbm_emp_energy(tmpind)) - mean(mod_emp_energy(tmpind)) ;
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% boostrap difference of differences
+
+rng(123)
+
+wsbm_emp_energy = mean(eval_wsbm_EMD,2) ;
+mod_emp_energy =mean(eval_mod_EMD,2) ;
+
+wsbmRand_emp_energy = mean(eval_wsbmRand_EMD,2) ;
+modRand_emp_energy =mean(eval_modRand_EMD,2) ;
+
+bootdiffofdiff = zeros(nBoot,1);
+% boot diff
+for idx=1:nBoot
+
+    tmpind = randi(nEnPerms,1,nEnPerms) ;
+    diff1 = mean(wsbmRand_emp_energy(tmpind))- mean(wsbm_emp_energy(tmpind)) ;
+    diff2 = mean(modRand_emp_energy(tmpind)) - mean(mod_emp_energy(tmpind)) ;
+    
+    bootdiffofdiff(idx) = diff2 - diff1 ;
+end
+
+
+

@@ -29,7 +29,7 @@ load(loadName) ;
 dat = baseRes.rawData ;
 dat(isnan(dat)) = 0 ; 
 
-numComms = size(wsbmBl,1) ;
+numComms = size(max(cons_ca.mod),1) ;
 numNodes = length(cons_ca.mod) ;
 
 numPerms = 10000 ;
