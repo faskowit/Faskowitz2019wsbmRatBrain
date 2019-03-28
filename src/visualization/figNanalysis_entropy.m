@@ -33,7 +33,7 @@ FIGURE_NAME = 'figEntropy' ;
 outputdir = strcat(PROJECT_DIR,'/reports/figures/',FIGURE_NAME,'/');
 mkdir(outputdir) 
 
-writeit = 1 ;
+writeit = 0 ;
 
 fontsize = 16 ;
 
@@ -183,9 +183,9 @@ axis square
 %quick stats
 % function [xvalR2, xvalsqErr, yhatLOOCV, coefStruct , lsFitStruct , permStruct ] = ... 
 %    nc_FitAndEvaluateModels(y, x, model, crossvalidate, bootIter, params , permIter)
-[wsbm_r2,~,~,wsbm_coefs] = nc_FitAndEvaluateModels( entr_K.wsbm.sum{ind}, nodeWei', ...
+[wsbm_r2,~,~,wsbm_coefs_nodes] = nc_FitAndEvaluateModels( entr_K.wsbm.sum{ind}, nodeWei', ...
                     'linear', 1, 5000) ;
-viz_FnE_Regression(wsbm_coefs)
+viz_FnE_Regression(wsbm_coefs_nodes)
 
 yl = ylabel('WSBM node entropy')
 yl.FontSize = fontsize ;
@@ -204,9 +204,9 @@ s.MarkerFaceAlpha = scatAlpha ;
 
 axis square
 
-[mod_r2,~,~,mod_coefs] = nc_FitAndEvaluateModels( entr_K.mod.sum{ind}, nodeWei', ...
+[mod_r2,~,~,mod_coefs_nodes] = nc_FitAndEvaluateModels( entr_K.mod.sum{ind}, nodeWei', ...
                     'linear', 1, 5000) ;
-viz_FnE_Regression(mod_coefs)
+viz_FnE_Regression(mod_coefs_nodes)
 
 yl = ylabel('Modular node entropy')
 yl.FontSize = fontsize ;
@@ -252,8 +252,6 @@ pvalue = 2*min(pvalue,1-pvalue);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% edgewise 
-
-% TODO... color scatter points by edge density
 
 scatAlpha = 0.05 ;
 
@@ -373,13 +371,6 @@ hold off
 
 set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.5]);
 
-% if writeit
-%     fileName = strcat(comTypes{cmTyp}, '_edge_ent_wColor.png');
-%     ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
-%     print(gcf,'-dpng','-r500',ff);
-%     close(gcf)
-% end
-
 end
 
 if writeit
@@ -393,6 +384,7 @@ end
 %%
 
 numBins = 10
+den_cmap = brewermap(numBins,'RdYlGn') ;
 
 imagesc(1:numBins)
 colormap(den_cmap)
@@ -419,76 +411,128 @@ if writeit
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% edgewise 
+%% vertical figs
 
-scatAlpha = 0.05 ;
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.8]);
 
-rng(123)
 
 % tight_subplot(Nh, Nw, [gap_h gap_w], [lower upper], [left right])
-sp = tight_subplot(1,2,[ .12 .12 ],[.12 .12],[.12 .12]);
+sp = tight_subplot(2,1,[ .035 .12 ],[.12 .12],[.12 .12]);
 
-rankEdge = tiedrank(dat(~nanE)) ;
-rankEnt = tiedrank(entr_K.wsbm.ent{ind}(~nanE)) ;
+axes(sp(1)) 
 
-axes(sp(1))
-s = scatter(rankEdge,rankEnt,50,'filled') ;
-%colormap([ 0.4 0.4 0.4 ; 0.8 0.8 0.8] ) ;
+s = scatter(nodeWei,entr_K.wsbm.sum{ind},'filled')
 s.MarkerFaceAlpha = scatAlpha ;
-% ss = scatplot(dat(~nanE),entr_K.wsbm.ent{ind}(~nanE))
 
 axis square
 
-%quick stats
-% function [xvalR2, xvalsqErr, yhatLOOCV, coefStruct , lsFitStruct , permStruct ] = ... 
-%    nc_FitAndEvaluateModels(y, x, model, crossvalidate, bootIter, params , permIter)
-[wsbm_r2,~,~,wsbm_coefs] = nc_FitAndEvaluateModels( rankEnt, rankEdge, ...
-                    'linear', 1, 5000) ;
-viz_FnE_Regression(wsbm_coefs)
+viz_FnE_Regression(wsbm_coefs_nodes)
 
-yl = ylabel('WSBM edge entropy')
+yl = ylabel('WSBM node entropy')
 yl.FontSize = fontsize ;
+ypos = yl.Position ;
 
-xl = xlabel('Log edge weight')
-xl.FontSize = fontsize ;
+% xl = xlabel('Node strength')
+% xl.FontSize = fontsize ;
 
+xticks([])
 
-%set(gca,'FontSize',fontsize)
+%mod
 
-%%%%%%%%%%%%%
+axes(sp(2))
 
-axes(sp(2)) 
-
-rankEnt = tiedrank(entr_K.mod.ent{ind}(~nanE)) ;
-
-
-s = scatter(rankEdge,rankEnt,50,'filled') ;
-%colormap([ 0.4 0.4 0.4 ; 0.8 0.8 0.8] ) ;
+s = scatter(nodeWei,entr_K.mod.sum{ind},'filled')
 s.MarkerFaceAlpha = scatAlpha ;
+
 axis square
 
-[mod_r2,~,~,mod_coefs] = nc_FitAndEvaluateModels( rankEnt, rankEdge, ...
-                    'linear', 1, 5000) ;
-viz_FnE_Regression(mod_coefs)
+viz_FnE_Regression(mod_coefs_nodes)
 
-yl = ylabel('Modular edge entropy')
+yl = ylabel('Modular node entropy')
 yl.FontSize = fontsize ;
+ypos_tmp = yl.Position 
+yl.Position = [ ypos(1) ypos_tmp(2:3) ] ;
 
-xl = xlabel('Log edge weight')
+xl = xlabel('Node strength')
 xl.FontSize = fontsize ;
 
-%set(gca,'FontSize',fontsize)
+if writeit
+    fileName = strcat('node_ent_scatter_vert.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+    close(gcf)
+end
 
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.5]);
+%%
 
+numBins = 10 ;
 
+uniq_vals = unique(log(dat(~nanE))) ;
+dat_nonan = log(dat(~nanE)) ;
 
+den_cmap = brewermap(numBins,'RdYlGn') ;
+datapointSz = 50 ;
 
+nnn = { 'WSBM' 'Modular' } ;
 
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.8]);
 
+% tight_subplot(Nh, Nw, [gap_h gap_w], [lower upper], [left right])
+sp = tight_subplot(2,1,[ .035 .12 ],[.12 .12],[.12 .12]);
 
+for cmTyp = 1:length(comTypes)
 
+%figure
+    
+dattt = entr_K.(comTypes{cmTyp}).ent{ind}(~nanE) ;
 
+axes(sp(cmTyp))
 
+s1 = scatter(dat_nonan, dattt) ;
+s1.MarkerEdgeAlpha = 0 ;
 
+for idx = 1:length(uniq_vals)
+    
+    currval = uniq_vals(idx) ;
+    currDat = dattt(dat_nonan==currval) ;
+    % histogram it
+    quantE = quantile(currDat,numBins-1) ;
+%     [binCount,hc] = histcounts(currDat,numBins) ;
+    [~,hc] = histcounts(currDat,[ min(currDat) quantE max(currDat) ]) ;
+    discVals = discretize(currDat,hc) ;
+    
+    currValVec = ones(length(currDat),1) .* currval ;
+    
+    hold on
+    s = scatter(currValVec,currDat,datapointSz,discVals,'filled') ;
+    s.MarkerFaceAlpha = .1 ;
+    
+end
+
+colormap(den_cmap)
+
+yl = ylabel([ nnn{cmTyp} ' edge entropy'])
+yl.FontSize = fontsize ;
+
+if cmTyp == 2
+xl = xlabel('Log edge weight')
+xl.FontSize = fontsize ;
+else
+    xticks([])
+end
+
+axis square
+
+hold off
+
+%set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.5]);
+
+end
+
+if writeit
+    fileName = strcat(comTypes{cmTyp}, '_edge_ent_wColor_vert.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+    close(gcf)
+end
 
