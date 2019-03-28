@@ -162,12 +162,12 @@ end
 %% plot what we got for modularity
 
 dat = baseRes.rawData ;
+
 dat(isnan(dat)) = 0 ;
 
 rng(123)
 
 figure
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.3, 0.5]);
 
 % !!! instead, use the Q that comes out of gen louvain !!! 
 % tmpMods = cell(length(COM_NUM_RANGE),1) ;
@@ -186,7 +186,7 @@ for idx = 1:length(COM_NUM_RANGE)
    
    tmpDists = mean(partition_distance(baseRes.mod.ca_K{idx}),2); 
    
-   scatter(COM_NUM_RANGE(idx) .* ones(length(tmpData),1) + (0.4).*rand(length(tmpData),1) -0.2 ,...
+   scatter(COM_NUM_RANGE(idx) .* ones(length(tmpData),1) + (0.2).*rand(length(tmpData),1) -0.2 ,...
        tmpData,[],tmpDists,'MarkerFaceAlpha',.5,'MarkerEdgeAlpha',.7)
    hold on
    
@@ -204,6 +204,8 @@ yl.FontSize = fontsize ;
 %set(gca,'FontSize',16)
 %ylim = get(gca,'Ylim') ;
 %plot([baseRes.wsbm.bestK baseRes.wsbm.bestK],ylim,'r','LineStyle',':','LineWidth',2)
+
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.22, 0.5]);
 
 if writeit 
     fileName = strcat('modularity_K.png');

@@ -20,7 +20,7 @@ FIGURE_NAME = 'figGener' ;
 outputdir = strcat(PROJECT_DIR,'/reports/figures/',FIGURE_NAME,'/');
 mkdir(outputdir) 
 
-writeit = 1 ;
+writeit = 0 ;
 
 fontsize = 16 ;
 
@@ -154,11 +154,11 @@ end
 
 figure
 
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.9, 0.50]);
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.95, 0.50]);
 
 % tight subplot
 % tight_subplot(Nh, Nw, [gap_h gap_w], [lower upper], [left right])
-sp = tight_subplot(2,5,[ .035 .04 ],[.12 .033],[.1 .1]);
+sp = tight_subplot(2,5,[ .035 .04 ],[.12 .033],[.15 .1]);
 
 measure_names = {'Strength' 'BDegree' 'Clustering' 'Betwness' 'BetwnessBin'} ;
 measure_short_names = { 's' 'bd' 'c' 'b' 'bb' } ;
@@ -239,11 +239,18 @@ for idx = 1:5
     
 end
 
-tightfig
+% set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.99, 0.50]);
+%tightfig
 
 if writeit
     fileName = strcat('gen_wsbmNmod_wNull_splitout.png');
     ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
     print(gcf,'-dpng','-r500',ff);
+    
+    
+    fileName = strcat('gen_wsbmNmod_wNull_splitout2.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    export_fig(gcf,ff,'-r550')
+    
     close(gcf)
 end
