@@ -74,7 +74,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% node-wise ish
 
-netstats.node.str = strengths_dir(dat) ;
+[~,~,netstats.node.str] = strengths_dir(dat) ;
 netstats.node.cc = clustering_coef_wd(dat) ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
