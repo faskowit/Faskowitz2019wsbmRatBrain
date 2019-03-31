@@ -380,6 +380,33 @@ if writeit
     close(gcf)
 end
 
+%% lets bootstrap again
+
+rng(123)
+
+dat_nonan = log(dat(~nanE)) ;
+
+nBoot = 5000 ;
+boot1 = zeros(nBoot,1) ;
+boot2 = zeros(nBoot,1) ;
+nEdges = sum(~nanE(:)) ;
+
+for idx = 1:nBoot
+    disp(idx)
+    bootsamp = randi(nEdges,1,nEdges) ;
+    tmp1 = entr_K.wsbm.ent{ind}(~nanE) ;
+    tmp2 = entr_K.mod.ent{ind}(~nanE) ;
+    boot1(idx) = corr(dat_nonan(bootsamp),tmp1(bootsamp),'Type','Spearman') ;
+    boot2(idx) = corr(dat_nonan(bootsamp),tmp2(bootsamp),'Type','Spearman') ;
+end
+
+ci_1 = prctile(boot1,[ 2.5 97.5]) ;
+ci_2 = prctile(boot2,[ 2.5 97.5]) ;
+
+bootdiff = boot1 - boot2 ;
+
+pvalue = mean(bootdiff<0);
+pvalue = 2*min(pvalue,1-pvalue);
 
 %%
 
@@ -428,6 +455,8 @@ axis square
 
 viz_FnE_Regression(wsbm_coefs_nodes)
 
+xlim([0 32])
+
 yl = ylabel('WSBM node entropy')
 yl.FontSize = fontsize ;
 ypos = yl.Position ;
@@ -447,6 +476,8 @@ s.MarkerFaceAlpha = scatAlpha ;
 axis square
 
 viz_FnE_Regression(mod_coefs_nodes)
+
+xlim([0 32])
 
 yl = ylabel('Modular node entropy')
 yl.FontSize = fontsize ;
@@ -506,7 +537,7 @@ for idx = 1:length(uniq_vals)
     hold on
     s = scatter(currValVec,currDat,datapointSz,discVals,'filled') ;
     s.MarkerFaceAlpha = .1 ;
-    
+        
 end
 
 colormap(den_cmap)
