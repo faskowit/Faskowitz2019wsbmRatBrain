@@ -175,5 +175,21 @@ end
 %    4.9995e-04
 % 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% confirm that wsbm still more random than chance
+
+emp_wsbm_mod = modularity_q(dat,cons_ca.wsbm) ;
+
+randq = zeros(numPerms,1) ;
+randq2 = zeros(numPerms,1) ;
+
+for idx = 1:numPerms
+    
+    permvec1 = randperm(numNodes) ;
+    randq(idx) = modularity_q(dat,cons_ca.wsbm(permvec1)) ;
+    randq2(idx) = modularity_q(randmio_dir_connected(dat,0.05),cons_ca.wsbm) ;
+end
+
+
 
 
