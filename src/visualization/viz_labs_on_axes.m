@@ -20,7 +20,8 @@ breaks = find(bb)' ;
 breaks2 = [ 0 breaks length(ca) ] ;
 midlabelpoint = zeros([nc 1]);
 for idx = 1:length(midlabelpoint)
-midlabelpoint(idx) = floor( (breaks2(idx+1) - breaks2(idx)) / 2) + breaks2(idx);  
+%midlabelpoint(idx) = floor( (breaks2(idx+1) - breaks2(idx)) / 2) + breaks2(idx);  
+midlabelpoint(idx) = ( (breaks2(idx+1) - breaks2(idx)) / 2) + breaks2(idx);  
 end
 
 set(gca,'ytick',midlabelpoint)
