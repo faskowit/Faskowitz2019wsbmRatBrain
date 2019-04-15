@@ -79,6 +79,9 @@ comms_thick = 1.75 ;
 
 nComm = baseRes.wsbm.bestK ;
 
+wsbm_color = [         0    0.4470    0.7410] ;
+mod_color = [0.8500    0.3250    0.0980] ;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% plot entropy images
 
@@ -481,8 +484,136 @@ ci_1 = prctile(boot1,[ 2.5 97.5]) ;
 ci_2 = prctile(boot2,[ 2.5 97.5]) ;
 
 % both include 0
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% plot 
 
+rng(123)
 
+scatAlpha = 0.5
+
+[~,~,bdegree] = degrees_dir(dat) ;
+
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.5]);
+
+tmp = (entr_K.wsbm.sum{ind} - entr_K.randblW.sum{ind}) ./ entr_K.randblW.sum{ind} ;
+
+s = scatter(bdegree,tmp,'filled')
+s.MarkerFaceAlpha = scatAlpha ;
+s.MarkerFaceColor = wsbm_color ;
+
+axis square
+
+yl = ylabel('Change node entropy')
+yl.FontSize = fontsize ;
+
+%mod
+
+tmp = (entr_K.mod.sum{ind} - entr_K.randblM.sum{ind}) ./ entr_K.randblM.sum{ind} ;
+
+hold on
+s = scatter(bdegree,tmp,'filled')
+s.MarkerFaceAlpha = scatAlpha ;
+s.MarkerFaceColor = mod_color ;
+
+axis square
+
+a=[cellstr(num2str(get(gca,'ytick')'*100))]; 
+pct = char(ones(size(a,1),1)*'%'); 
+new_yticks = [char(a),pct];
+set(gca,'yticklabel',new_yticks)
+
+xl = xlabel('Node degree')
+xl.FontSize = fontsize ;
+
+ll = legend({'WSBM' 'Modular'})
+ll.FontSize = fontsize ;
+
+if writeit
+    fileName = strcat('node_ent_scatter_chgnprcnt.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+    close(gcf)
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% plot the null with the actual
+
+rng(123)
+
+scatAlpha1 = 0.5
+scatAlpha2 = 0.2
+
+[~,~,bdegree] = degrees_dir(dat) ;
+
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.8]);
+
+% tight_subplot(Nh, Nw, [gap_h gap_w], [lower upper], [left right])
+sp = tight_subplot(2,1,[ .035 .12 ],[.12 .12],[.12 .12]);
+
+axes(sp(1)) 
+
+s = scatter(bdegree,entr_K.wsbm.sum{ind},'filled')
+s.MarkerFaceAlpha = scatAlpha1 ;
+%s.MarkerEdgeColor = wsbm_color; 
+s.MarkerFaceColor = wsbm_color ;
+hold on
+s = scatter(bdegree,entr_K.randblW.sum{ind},'filled')
+s.MarkerFaceAlpha = scatAlpha2 ;
+%s.MarkerEdgeColor = wsbm_color; 
+s.MarkerFaceColor = wsbm_color ;
+
+axis square
+
+%xlim([0 32])
+xl = xlim
+
+yl = ylabel('WSBM node entropy')
+yl.FontSize = fontsize ;
+ypos = yl.Position ;
+yl.Position = [ ypos(1)*1.1 ypos(2:3) ] ;
+ypos = yl.Position ;
+
+% xl = xlabel('Node strength')
+% xl.FontSize = fontsize ;
+
+xticks([])
+
+%mod
+
+axes(sp(2))
+
+s = scatter(bdegree,entr_K.mod.sum{ind},'filled')
+s.MarkerFaceAlpha = scatAlpha1 ;
+%s.MarkerEdgeColor = mod_color; 
+s.MarkerFaceColor = mod_color ;
+hold on
+s = scatter(bdegree,entr_K.randblM.sum{ind},'filled')
+s.MarkerFaceAlpha = scatAlpha2 ;
+%s.MarkerEdgeColor = mod_color; 
+s.MarkerFaceColor = mod_color ;
+axis square
+
+xlim(xl)
+
+yl = ylabel('Modular node entropy')
+yl.FontSize = fontsize ;
+ypos_tmp = yl.Position 
+yl.Position = [ ypos(1) ypos_tmp(2:3) ] ;
+
+xl = xlabel('Node degree')
+xl.FontSize = fontsize ;
+
+if writeit
+    fileName = strcat('node_ent_scatter_vert.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+    close(gcf)
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
+aaa = assortativity_bin(dat) ;
 
 
 

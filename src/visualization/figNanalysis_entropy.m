@@ -225,6 +225,69 @@ if writeit
     close(gcf)
 end
 
+%% just degree
+
+[~,~,bindeg] = degrees_dir(dat)
+
+
+scatAlpha = 0.5 ;
+
+rng(123)
+
+% tight_subplot(Nh, Nw, [gap_h gap_w], [lower upper], [left right])
+sp = tight_subplot(1,2,[ .12 .12 ],[.12 .12],[.12 .12]);
+
+axes(sp(1))
+s = scatter(bindeg,entr_K.wsbm.sum{ind},'filled')
+s.MarkerFaceAlpha = scatAlpha ;
+
+axis square
+
+%quick stats
+% function [xvalR2, xvalsqErr, yhatLOOCV, coefStruct , lsFitStruct , permStruct ] = ... 
+%    nc_FitAndEvaluateModels(y, x, model, crossvalidate, bootIter, params , permIter)
+[wsbm_r2,~,~,wsbm_coefs_nodes] = nc_FitAndEvaluateModels( entr_K.wsbm.sum{ind}, bindeg', ...
+                    'linear', 1, 5000) ;
+viz_FnE_Regression(wsbm_coefs_nodes)
+
+yl = ylabel('WSBM node entropy')
+yl.FontSize = fontsize ;
+
+xl = xlabel('Node strength')
+xl.FontSize = fontsize ;
+
+
+%set(gca,'FontSize',fontsize)
+
+%%%%%%%%%%%%%
+
+axes(sp(2)) 
+s= scatter(bindeg,entr_K.mod.sum{ind},'filled')
+s.MarkerFaceAlpha = scatAlpha ;
+
+axis square
+
+[mod_r2,~,~,mod_coefs_nodes] = nc_FitAndEvaluateModels( entr_K.mod.sum{ind}, bindeg', ...
+                    'linear', 1, 5000) ;
+viz_FnE_Regression(mod_coefs_nodes)
+
+yl = ylabel('Modular node entropy')
+yl.FontSize = fontsize ;
+
+xl = xlabel('Node strength')
+xl.FontSize = fontsize ;
+
+%set(gca,'FontSize',fontsize)
+
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.5]);
+
+if writeit
+    fileName = strcat('node_ent_scatter.png');
+    ff = fullfile(strcat(outputdir,'/',OUTPUT_STR,'_',fileName)); 
+    print(gcf,'-dpng','-r500',ff);
+    close(gcf)
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% lets bootstrap
 
@@ -440,8 +503,14 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% vertical figs
 
+rng(123)
+
 set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.8]);
 
+[wsbm_r2,~,~,wsbm_coefs] = nc_FitAndEvaluateModels( entr_K.wsbm.sum{ind}, nodeWei', ...
+                    'linear', 1, 5000) ;
+[mod_r2,~,~,mod_coefs] = nc_FitAndEvaluateModels( entr_K.mod.sum{ind}, nodeWei', ...
+                    'linear', 1, 5000) ;
 
 % tight_subplot(Nh, Nw, [gap_h gap_w], [lower upper], [left right])
 sp = tight_subplot(2,1,[ .035 .12 ],[.12 .12],[.12 .12]);
@@ -453,7 +522,7 @@ s.MarkerFaceAlpha = scatAlpha ;
 
 axis square
 
-viz_FnE_Regression(wsbm_coefs_nodes)
+viz_FnE_Regression(wsbm_coefs)
 
 xlim([0 32])
 
@@ -475,7 +544,7 @@ s.MarkerFaceAlpha = scatAlpha ;
 
 axis square
 
-viz_FnE_Regression(mod_coefs_nodes)
+viz_FnE_Regression(mod_coefs)
 
 xlim([0 32])
 
@@ -566,4 +635,26 @@ if writeit
     print(gcf,'-dpng','-r500',ff);
     close(gcf)
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+
+lll = load('data/raw/CCTX_matrix.mat') ;
+
+[se,sortent] = sort(entr_K.wsbm.sum{ind},'descend') ;
+[ss,sortstr] = sort(nodeWei,'descend') ;
+
+[s,sortentm] = sort(entr_K.mod.sum{ind},'descend') ;
+
+lll.area_names(sortentm)'
+
+lll.area_names(sortstr)'
+
+
+
+%%
+
+imsc_grid_comm(agreement(baseRes.wsbm.ca_K{ind}),cons_ca.wsbm)
+imsc_grid_comm(agreement(baseRes.mod.ca_K{ind}),cons_ca.mod)
+
 

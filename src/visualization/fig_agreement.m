@@ -136,31 +136,54 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% agreement between wsbm n mod
 
-cmap = brewermap(3,'YlGnBu') ;
+cmap = brewermap(3,'PuBu') ;
+cmap(1,:) = [ 1 1 1 ] ;
 
 wm_agreement = agreement([cons_ca.wsbm cons_ca.mod]) ;
 
 % tight_subplot(Nh, Nw, [gap_h gap_w], [lower upper], [left right])
 sp = tight_subplot(1,2,[ .07 .12 ],[.12 .12],[.12 .12]);
 
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.5]);
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.6, 0.5]);
 
 axes(sp(1))
-imsc_grid_comm(wm_agreement,cons_ca.wsbm)
+ims = imsc_grid_comm(wm_agreement+1,cons_ca.wsbm)
+ims.CDataMapping = 'Direct'
+%set(ims,'alphadata',wm_agreement(sss,sss)~=0);
+
 axis square
 cb = colorbar ;
-cb.Ticks = [ 0 1 2] ;
 colormap(cmap)
+cb.Ticks = [ 1.5 2.5 3.5 ] ;
+cb.TickLabels = {'n/a' 'one' 'both' }
+%title('WSBM organzied')
+xticks([])
+yticks([]) 
 
-title('WSBM organzied')
+% [a,b] = unique(sort(cons_ca.wsbm));
+% hold on;
+% for i=2:length(b)
+%     ll = line([0 78],[b(i)-0.5 b(i)-0.5]);
+%     uistack(ll,'bottom')
+%     ll = line([b(i)-0.5 b(i)-0.5],[0 78]);
+%     uistack(ll,'bottom')
+% end
+
+viz_labs_on_axes(cons_ca.wsbm)
 
 axes(sp(2))
-imsc_grid_comm(wm_agreement,cons_ca.mod)
+ims = imsc_grid_comm(wm_agreement+1,cons_ca.mod)
+ims.CDataMapping = 'Direct'
 axis square
 cb = colorbar ;
-cb.Ticks = [ 0 1 2] ;
 colormap(cmap)
-title('Modular organzied')
+cb.Ticks = [ 1.5 2.5 3.5 ] ;
+cb.TickLabels = {'n/a' 'one' 'both' }
+%title('Modular organzied')
+xticks([])
+yticks([]) 
+
+viz_labs_on_axes(cons_ca.mod)
 
 if writeit
     fileName = strcat('agreement_btwn_models.png');
