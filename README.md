@@ -1,7 +1,7 @@
 ratbrain
 ==============================
 
-community detection in rat connectome
+community detection in rat connectome. manuscript in submission.
 
 Project Organization
 --------------------
