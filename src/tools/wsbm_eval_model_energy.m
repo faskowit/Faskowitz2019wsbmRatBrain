@@ -1,4 +1,4 @@
-function [B,E,K,EMD] = wsbm_eval_model_energy(origModel,numSims,randModelParam,symmetric,userEvalFuncs)
+function [B,E,K] = wsbm_eval_model_energy(origModel,numSims,randModelParam,symmetric,userEvalFuncs)
 % EVAL_GENWSBM_MODEL     Generation and evaluation of synthetic networks
 %
 %   [B,E,K] = EVALUATE_GENERATIVE_MODEL(A,Atgt,D,m,modeltype,modelvar,params) 
@@ -51,9 +51,10 @@ if ~exist('userEvalFuncs','var') || isempty(userEvalFuncs)
     % make sure all outputs are column vecs
     evalFuncs{1} = @(A) sum(A,2) + sum(A,1)';
     evalFuncs{2} = @(A) sum(A ~= 0,2) + sum(A ~= 0,1)';
-    evalFuncs{3} = @(A) clustering_coef_wd(A);
+    evalFuncs{3} = @(A) clustering_coef_wd(...
+        weight_conversion(A,'normalize'));
     evalFuncs{4} = @(A) betweenness_wei(1 ./ A);
-    evalFuncs{5} = @(A) betweenness_bin(A)' ;
+    evalFuncs{5} = @(A) betweenness_bin(single(A ~= 0))' ;
 
 else
     if ~iscell(userEvalFuncs)
@@ -89,15 +90,14 @@ end
 % record num stats to eval on
 numStats = length(X);
 
-% record K-S, EMD stats
+% record K-S,
 K = zeros(numSims,numStats);
-EMD = zeros(numSims,numStats);
 
 % record simulated networks
 B = zeros([ nNodes nNodes numSims]);
 
 for idx = 1:numSims
-        
+    
     % rand the model?
     if randModelParam == 1
         wsbmModel = wsbm_randomize_model_params(origModel,3);
@@ -118,10 +118,9 @@ for idx = 1:numSims
     
     for jdx = 1:numStats
         try
-            [K(idx,jdx),EMD(idx,jdx)] = fcn_ks(X{jdx},Y{jdx});
+            [K(idx,jdx)] = fcn_ks(X{jdx},Y{jdx});
         catch
             K(idx,jdx) = NaN ;
-            EMD(idx,jdx) = NaN ;
         end
     end
     
@@ -132,21 +131,20 @@ end
 
 E = max(K,[],2);
 
-function [kstat,emd] = fcn_ks(x1,x2)
+function kstat = fcn_ks(x1,x2)
 binEdges    =  [-inf ; sort([x1;x2]) ; inf];
 
-binCounts1  =  histc (x1 , binEdges, 1);
-binCounts2  =  histc (x2 , binEdges, 1);
+binCounts1  =  histcounts (x1 , binEdges);
+binCounts2  =  histcounts (x2 , binEdges);
 
 sumCounts1  =  cumsum(binCounts1)./sum(binCounts1);
 sumCounts2  =  cumsum(binCounts2)./sum(binCounts2);
 
-sampleCDF1  =  sumCounts1(1:end-1);
-sampleCDF2  =  sumCounts2(1:end-1);
+sampleCDF1  =  sumCounts1(1:end);
+sampleCDF2  =  sumCounts2(1:end);
 
 deltaCDF  =  abs(sampleCDF1 - sampleCDF2);
 kstat = max(deltaCDF);
-emd = sum(deltaCDF);
 
 
 
