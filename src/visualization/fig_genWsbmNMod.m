@@ -20,7 +20,7 @@ FIGURE_NAME = 'figGener' ;
 outputdir = strcat(PROJECT_DIR,'/reports/figures/',FIGURE_NAME,'/');
 mkdir(outputdir) 
 
-writeit = 0 ;
+writeit = 1 ;
 
 fontsize = 16 ;
 
@@ -38,12 +38,12 @@ set(groot, ...
 'DefaultAxesTickLength', [0.02 0.025]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% EMD
+%% KS
 
 figure
 
 % calculate num bins
-X = [ mean(eval_wsbm_EMD,2) ; mean(eval_mod_EMD,2) ] ;
+X = [ mean(eval_wsbm_K,2) ; mean(eval_mod_K,2) ] ;
 binSize = 3.5*std(X(:))*numel(X)^(-1/3) ;
 
 % if third needed, we can add
@@ -51,31 +51,31 @@ cmap = [0    0.4470    0.7410 ;
     0.8500    0.3250    0.0980 ;
     0.8500    0.3250    0.3920 ];
 
-histogram(mean(eval_wsbm_EMD(:,1:5),2),...
+histogram(mean(eval_wsbm_K(:,1:5),2),...
     'normalization','probability',...
     'FaceColor',cmap(1,:),'EdgeAlpha',0.01,...
     'BinWidth',binSize) 
 hold 
-histogram(mean(eval_mod_EMD(:,1:5),2),...
+histogram(mean(eval_mod_K(:,1:5),2),...
     'normalization','probability',...
     'FaceColor',cmap(2,:),'EdgeAlpha',0.01,...
     'BinWidth',binSize)
 
-lg = legend('WSBM','Modular') ;
+lg = legend('WSBM','Modular','Location','northwest') ;
 lg.FontSize = fontsize ;
 
 axis square
-xl = xlabel('Mean EMD energy') ;
+xl = xlabel('Mean KS energy') ;
 yl = ylabel('Normalized frequency') ;
 xl.FontSize = fontsize ;
 yl.FontSize = fontsize ;
 
 %set(gca,'FontSize',fontsize)
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.45, 0.5]);
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.55, 0.5]);
 pbaspect([1 1 1])
 
 % tight
-tightfig
+%tightfig
 
 if writeit
     fileName = strcat('gen_wsbmNmod.png');
@@ -89,17 +89,22 @@ end
 
 figure
 
-x_lim = [ 10 50 ] ;
-y_lim = [ 0 0.09 ] ;
+combovec = [ mean(eval_wsbm_K,2) ; mean(eval_wsbmRand_K,2) ; 
+    mean(eval_mod_K,2) ; mean(eval_modRand_K,2) ];
+
+x_lim = [ min(combovec)*0.9 max(combovec)*1.1 ] ;
+y_lim = [ 0 0.17 ] ;
 
 % tight subplot
 sp = tight_subplot(2,1,.01,[.1 .025],[.15 .15]);
 
 axes(sp(1))
 
-histogram(mean(eval_wsbm_EMD,2),'normalization','probability','FaceColor',cmap(1,:),'FaceAlpha',0.6,'EdgeAlpha',0.01)
+hh = histogram(mean(eval_wsbm_K,2),'normalization','probability','FaceColor',cmap(1,:),'FaceAlpha',0.6,'EdgeAlpha',0.01)
+hh.BinWidth = hh.BinWidth * 2 ;
 hold
-histogram(mean(eval_wsbmRand_EMD,2),'normalization','probability','FaceColor',cmap(1,:),'FaceAlpha',0.25,'EdgeAlpha',0.05)
+hh = histogram(mean(eval_wsbmRand_K,2),'normalization','probability','FaceColor',cmap(1,:),'FaceAlpha',0.25,'EdgeAlpha',0.05)
+hh.BinWidth = hh.BinWidth * 2 ;
 
 set(gca,'XTickLabel',[])
 
@@ -116,9 +121,11 @@ yl.FontSize = fontsize ;
 
 axes(sp(2))
 
-histogram(mean(eval_mod_EMD,2),'normalization','probability','FaceColor',cmap(2,:),'FaceAlpha',0.6,'EdgeAlpha',0.01)
+hh = histogram(mean(eval_mod_K,2),'normalization','probability','FaceColor',cmap(2,:),'FaceAlpha',0.6,'EdgeAlpha',0.01)
+hh.BinWidth = hh.BinWidth * 2 ;
 hold
-histogram(mean(eval_modRand_EMD,2),'normalization','probability','FaceColor',cmap(2,:),'FaceAlpha',0.25,'EdgeAlpha',0.05)
+hh = histogram(mean(eval_modRand_K,2),'normalization','probability','FaceColor',cmap(2,:),'FaceAlpha',0.25,'EdgeAlpha',0.05)
+hh.BinWidth = hh.BinWidth * 2 ;
 
 xlim(x_lim)
 ylim(y_lim)
@@ -128,7 +135,7 @@ lg.FontSize = fontsize - 2 ;
 
 yl = ylabel('Normalized frequency') ;
 yl.FontSize = fontsize ;
-xl = xlabel('Mean EMD energy') ;
+xl = xlabel('Mean KS energy') ;
 xl.FontSize = fontsize ;
 
 %set(gca,'FontSize',fontsize)
@@ -167,25 +174,25 @@ x_lim = cell(5,1) ;
 
 for idx = 1:5 
    
-    combo = [ eval_wsbmRand_EMD(:,idx) ; eval_modRand_EMD(:,idx) ; ...
-        eval_wsbm_EMD(:,idx) ; eval_mod_EMD(:,idx) ] ;
+    combo = [ eval_wsbmRand_K(:,idx) ; eval_modRand_K(:,idx) ; ...
+        eval_wsbm_K(:,idx) ; eval_mod_K(:,idx) ] ;
     x_lim{idx} = [ 0 (max(combo) .* 1.02) ] ;
     
 end
 
 for idx = 1:5
-   
-    binSize = 2 ;
-    
+       
     axes(sp(idx))
     
-    histogram(eval_wsbm_EMD(:,idx),'BinMethod','sturges',...
+    hh = histogram(eval_wsbm_K(:,idx),'BinMethod','sturges',...
         'normalization','probability','EdgeAlpha',0.05,'FaceAlpha',0.6,...
         'FaceColor',cmap(1,:),'BinWidth',binSize)
+    hh.BinWidth = hh.BinWidth * 2.6 ;
     hold
-    histogram(eval_mod_EMD(:,idx),'BinMethod','sturges',...
+    hh = histogram(eval_mod_K(:,idx),'BinMethod','sturges',...
         'normalization','probability','EdgeAlpha',0.05,'FaceAlpha',0.6,...
         'FaceColor',cmap(2,:),'BinWidth',binSize)
+    hh.BinWidth = hh.BinWidth * 2.6 ;
     axis square
     tl = title(measure_names{idx},'FontWeight','normal') ;
     tl.FontSize = fontsize ;
@@ -209,22 +216,24 @@ for idx = 1:5
    
     axes(sp(idx+5))
     
-    histogram(eval_wsbmRand_EMD(:,idx),'normalization','probability',...
+    hh = histogram(eval_wsbmRand_K(:,idx),'normalization','probability',...
         'FaceColor',cmap(1,:),'FaceAlpha',0.25,'EdgeAlpha',0.01)
+    hh.BinWidth = hh.BinWidth * 2.5 ;
     hold
-    histogram(eval_modRand_EMD(:,idx),'normalization','probability',...
+    hh = histogram(eval_modRand_K(:,idx),'normalization','probability',...
         'FaceColor',cmap(2,:),'FaceAlpha',0.25,'EdgeAlpha',0.01)
+    hh.BinWidth = hh.BinWidth * 2.5 ;
     axis square
     
     % and plot a line for the empirical
     ylimits = ylim ;
     
-    tmp = median(mean(eval_wsbm_EMD(:,idx)),2) ;
+    tmp = median(mean(eval_wsbm_K(:,idx)),2) ;
     plot([ tmp tmp ],...
         [ylimits(1) ylimits(2)*0.95],...
         'Color',[cmap(1,:) 0.9],'LineWidth',1.5)
     
-    tmp = median(mean(eval_mod_EMD(:,idx)),2) ;
+    tmp = median(mean(eval_mod_K(:,idx)),2) ;
     plot([ tmp tmp ],...
         [ylimits(1) ylimits(2)*0.95],...
         'Color',[cmap(2,:) 0.9],'LineWidth',1.5)
@@ -234,7 +243,7 @@ for idx = 1:5
     %x_lim{idx} = xlim() ;
     xlim(x_lim{idx}) ;
     
-    xl = xlabel(strcat('EMD({\it ',measure_short_names{idx},'})'))
+    xl = xlabel(strcat('KS({\it ',measure_short_names{idx},'})'))
     xl.FontSize = fontsize ;
     
 end

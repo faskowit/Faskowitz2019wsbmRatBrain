@@ -50,64 +50,66 @@ muMod = dummyvar(cons_ca.mod)' ;
 
 numEval = 10000 ;
 
-[eval_wsbm_B,eval_wsbm_E,eval_wsbm_K,eval_wsbm_EMD] = wsbm_eval_model_energy(wsbmModel,numEval,0,0);
-[eval_mod_B,eval_mod_E,eval_mod_K,eval_mod_EMD] = wsbm_eval_model_energy(modularityModel,numEval,0,0);
+[~,~,eval_wsbm_K] = wsbm_eval_model_energy(wsbmModel,numEval,0,0);
+[~,~,eval_mod_K] = wsbm_eval_model_energy(modularityModel,numEval,0,0);
 
-[eval_wsbmRand_B,eval_wsbmRand_E,eval_wsbmRand_K,eval_wsbmRand_EMD] = wsbm_eval_model_energy(wsbmModel,numEval,1,0);
-[eval_modRand_B,eval_modRand_E,eval_modRand_K,eval_modRand_EMD] = wsbm_eval_model_energy(modularityModel,numEval,1,0);
+[~,~,eval_wsbmRand_K] = wsbm_eval_model_energy(wsbmModel,numEval,1,0);
+[~,~,eval_modRand_K] = wsbm_eval_model_energy(modularityModel,numEval,1,0);
 
 saveName = strcat(PROJECT_DIR,'/data/processed/',OUTPUT_STR, '_', GRID_RUN,'_evalGenReps.mat') ;
 % load(saveName) ;
 save(saveName,...
-    'eval_wsbm_K','eval_wsbmRand_K','eval_wsbm_EMD','eval_wsbmRand_EMD',...
-    'eval_mod_K','eval_modRand_K','eval_mod_EMD','eval_modRand_EMD' ) ;
+    'eval_wsbm_K','eval_wsbmRand_K',...
+    'eval_mod_K','eval_modRand_K') ;
 
-%%  eval with less...
-
-rng(123)
-
-% setup func handles for evaluations
-eFunc = cell(1,1) ;
-
-% make sure all outputs are column vecs
-eFunc{1} = @(A) sum(A,2) + sum(A,1)';
-eFunc{2} = @(A) clustering_coef_wd(A);
-eFunc{3} = @(A) betweenness_wei(1 ./ A);
-
-numEval = 10000 ;
-
-[eval_wsbm_B2,...
-    eval_wsbm_E2,...
-    eval_wsbm_K2,...
-    eval_wsbm_EMD2] = wsbm_eval_model_energy(wsbmModel,numEval,0,0,eFunc);
-[eval_mod_B2,...
-    eval_mod_E2,...
-    eval_mod_K2,...
-    eval_mod_EMD2] = wsbm_eval_model_energy(modularityModel,numEval,0,0,eFunc);
-
-[eval_wsbmRand_B2,...
-    eval_wsbmRand_E2,...
-    eval_wsbmRand_K2,...
-    eval_wsbmRand_EMD2] = wsbm_eval_model_energy(wsbmModel,numEval,1,0,eFunc);
-[eval_modRand_B2,...
-    eval_modRand_E2,...
-    eval_modRand_K2,...
-    eval_modRand_EMD2] = wsbm_eval_model_energy(modularityModel,numEval,1,0,eFunc);
-
-saveName = strcat(PROJECT_DIR,'/data/processed/',OUTPUT_STR, '_', GRID_RUN,'_evalGenReps_lessFuncs.mat') ;
-% load(saveName) ;
-save(saveName,...
-    'eval_wsbm_K2','eval_wsbmRand_K2','eval_wsbm_EMD2','eval_wsbmRand_EMD2',...
-    'eval_mod_K2','eval_modRand_K2','eval_mod_EMD2','eval_modRand_EMD2' ) ;
+% %%  eval with less...
+% 
+% rng(123)
+% 
+% % setup func handles for evaluations
+% eFunc = cell(1,1) ;
+% 
+% % make sure all outputs are column vecs
+% eFunc{1} = @(A) sum(A,2) + sum(A,1)';
+% eFunc{2} = @(A) clustering_coef_wd(A);
+% eFunc{3} = @(A) betweenness_wei(1 ./ A);
+% 
+% numEval = 10000 ;
+% 
+% [eval_wsbm_B2,...
+%     eval_wsbm_E2,...
+%     eval_wsbm_K2,...
+%     eval_wsbm_EMD2] = wsbm_eval_model_energy(wsbmModel,numEval,0,0,eFunc);
+% [eval_mod_B2,...
+%     eval_mod_E2,...
+%     eval_mod_K2,...
+%     eval_mod_EMD2] = wsbm_eval_model_energy(modularityModel,numEval,0,0,eFunc);
+% 
+% [eval_wsbmRand_B2,...
+%     eval_wsbmRand_E2,...
+%     eval_wsbmRand_K2,...
+%     eval_wsbmRand_EMD2] = wsbm_eval_model_energy(wsbmModel,numEval,1,0,eFunc);
+% [eval_modRand_B2,...
+%     eval_modRand_E2,...
+%     eval_modRand_K2,...
+%     eval_modRand_EMD2] = wsbm_eval_model_energy(modularityModel,numEval,1,0,eFunc);
+% 
+% saveName = strcat(PROJECT_DIR,'/data/processed/',OUTPUT_STR, '_', GRID_RUN,'_evalGenReps_lessFuncs.mat') ;
+% % load(saveName) ;
+% save(saveName,...
+%     'eval_wsbm_K2','eval_wsbmRand_K2','eval_wsbm_EMD2','eval_wsbmRand_2',...
+%     'eval_mod_K2','eval_modRand_K2','eval_mod_EMD2','eval_modRand_EMD2' ) ;
 
 %% quick plot
 
 figure
 
-numEFunc = length(eFunc) ;
+fontsize=12
+
+numEFunc = length(1:5) ;
 
 % calculate num bins
-X = [ mean(eval_wsbm_EMD2,2) ; mean(eval_mod_EMD2,2) ] ;
+X = [ mean(eval_wsbm_K,2) ; mean(eval_mod_K,2) ] ;
 binSize = 3.5*std(X(:))*numel(X)^(-1/3) ;
 
 % if third needed, we can add
@@ -115,12 +117,12 @@ cmap = [0    0.4470    0.7410 ;
     0.8500    0.3250    0.0980 ;
     0.8500    0.3250    0.3920 ];
 
-histogram(mean(eval_wsbm_EMD2(:,1:numEFunc),2),...
+histogram(mean(eval_wsbm_K(:,1:numEFunc),2),...
     'normalization','probability',...
     'FaceColor',cmap(1,:),'EdgeAlpha',0.01,...
     'BinWidth',binSize) 
 hold 
-histogram(mean(eval_mod_EMD2(:,1:numEFunc),2),...
+histogram(mean(eval_mod_K(:,1:numEFunc),2),...
     'normalization','probability',...
     'FaceColor',cmap(2,:),'EdgeAlpha',0.01,...
     'BinWidth',binSize)
@@ -129,7 +131,7 @@ lg = legend('WSBM','Modular') ;
 lg.FontSize = fontsize ;
 
 axis square
-xl = xlabel('Mean EMD energy') ;
+xl = xlabel('Mean energy') ;
 yl = ylabel('Normalized frequency') ;
 xl.FontSize = fontsize ;
 yl.FontSize = fontsize ;
@@ -138,12 +140,12 @@ yl.FontSize = fontsize ;
 
 figure
 
-numEFunc = length(eFunc) ;
+numEFunc = length(1:5) ;
 
-curr_wsbm_dat = eval_wsbm_EMD2 ;
-curr_wsbmRand_dat = eval_wsbmRand_EMD2 ;
-curr_mod_dat = eval_mod_EMD2 ;
-curr_modRand_dat = eval_modRand_EMD2 ;
+curr_wsbm_dat = eval_wsbm_K ;
+curr_wsbmRand_dat = eval_wsbmRand_K ;
+curr_mod_dat = eval_mod_K ;
+curr_modRand_dat = eval_modRand_K ;
 
 set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.9, 0.50]);
 
@@ -151,13 +153,14 @@ set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.9, 0.50]);
 % tight_subplot(Nh, Nw, [gap_h gap_w], [lower upper], [left right])
 sp = tight_subplot(2,numEFunc,[ .035 .04 ],[.12 .033],[.1 .1]);
 
-% measure_names = {'Strength' 'BDegree' 'Clustering' 'Betwness' 'BetwnessBin'} ;
-% measure_short_names = { 's' 'bd' 'c' 'b' 'bb' } ;
+measure_names = {'Strength' 'BDegree' 'Clustering' 'Betwness' 'BetwnessBin'} ;
+measure_short_names = { 's' 'bd' 'c' 'b' 'bb' } ;
 
-measure_names = {'Strength' 'Clustering' 'Betwness'} ;
-measure_short_names = { 's' 'c' 'b' } ;
+% measure_names = {'Strength' 'Clustering' 'Betwness'} ;
+% measure_short_names = { 's' 'c' 'b' } ;
 
 x_lim = cell(numEFunc,1) ;
+binw = 0.03 ;
 
 for idx = 1:numEFunc
    
@@ -168,18 +171,16 @@ for idx = 1:numEFunc
 end
 
 for idx = 1:numEFunc
-   
-    binSize = 2 ;
     
     axes(sp(idx))
     
     histogram(curr_wsbm_dat(:,idx),'BinMethod','sturges',...
         'normalization','probability','EdgeAlpha',0.05,'FaceAlpha',0.6,...
-        'FaceColor',cmap(1,:),'BinWidth',binSize)
+        'FaceColor',cmap(1,:),'BinWidth',binw)
     hold
     histogram(curr_mod_dat(:,idx),'BinMethod','sturges',...
         'normalization','probability','EdgeAlpha',0.05,'FaceAlpha',0.6,...
-        'FaceColor',cmap(2,:),'BinWidth',binSize)
+        'FaceColor',cmap(2,:),'BinWidth',binw)
     axis square
     tl = title(measure_names{idx},'FontWeight','normal') ;
     tl.FontSize = fontsize ;
@@ -194,10 +195,10 @@ for idx = 1:5
     axes(sp(idx+numEFunc))
     
     histogram(curr_wsbmRand_dat(:,idx),'normalization','probability',...
-        'FaceColor',cmap(1,:),'FaceAlpha',0.25,'EdgeAlpha',0.01)
+        'FaceColor',cmap(1,:),'FaceAlpha',0.25,'EdgeAlpha',0.01,'BinWidth',binw)
     hold
     histogram(curr_modRand_dat(:,idx),'normalization','probability',...
-        'FaceColor',cmap(2,:),'FaceAlpha',0.25,'EdgeAlpha',0.01)
+        'FaceColor',cmap(2,:),'FaceAlpha',0.25,'EdgeAlpha',0.01,'BinWidth',binw)
     axis square
     
     % and plot a line for the empirical
@@ -218,7 +219,7 @@ for idx = 1:5
     %x_lim{idx} = xlim() ;
     xlim(x_lim{idx}) ;
     
-    xl = xlabel(strcat('EMD({\it ',measure_short_names{idx},'})'))
+    xl = xlabel(strcat('KS({\it ',measure_short_names{idx},'})'))
     xl.FontSize = fontsize ;
     
 end
@@ -229,10 +230,10 @@ end
 rng(123)
 
 nBoot = 10000 ;
-nEnPerms = length(eval_wsbm_EMD) ;
+nEnPerms = length(eval_wsbm_K) ;
 
-wsbm_emp_energy = mean(eval_wsbm_EMD,2) ;
-mod_emp_energy =mean(eval_mod_EMD,2) ;
+wsbm_emp_energy = mean(eval_wsbm_K,2) ;
+mod_emp_energy =mean(eval_mod_K,2) ;
 
 
 bootdiff = zeros(nBoot,1);
@@ -248,11 +249,11 @@ end
 
 rng(123)
 
-wsbm_emp_energy = mean(eval_wsbm_EMD,2) ;
-mod_emp_energy =mean(eval_mod_EMD,2) ;
+wsbm_emp_energy = mean(eval_wsbm_K,2) ;
+mod_emp_energy =mean(eval_mod_K,2) ;
 
-wsbmRand_emp_energy = mean(eval_wsbmRand_EMD,2) ;
-modRand_emp_energy =mean(eval_modRand_EMD,2) ;
+wsbmRand_emp_energy = mean(eval_wsbmRand_K,2) ;
+modRand_emp_energy =mean(eval_modRand_K,2) ;
 
 bootdiffofdiff = zeros(nBoot,1);
 % boot diff
