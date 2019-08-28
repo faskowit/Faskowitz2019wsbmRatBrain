@@ -20,7 +20,7 @@ end
 
 GRID_RUN = 'results_expBern' ;
 GRID_OUTPUT_DIR = [ PROJECT_DIR '/data/processed/grid/' GRID_RUN '/' ] ;
-OUTPUT_STR = 'gridRuns1' ;
+OUTPUT_STR = 'gridRunsFull' ;
 
 RESAMP_DIVS = cell(4,1) ;
 
