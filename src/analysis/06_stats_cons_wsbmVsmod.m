@@ -5,7 +5,7 @@ clearvars
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% load
 
-config_file='config_template_rb2_oneHemi_analyzeGridRuns.m';
+config_file='config_template_rb2_analyzeGridRuns.m';
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 addpath(strcat(pwd,'/config'))
 run(config_file);
@@ -175,6 +175,13 @@ end
 %    4.9995e-04
 % 
 
+% for both hemi--> all 0's except for last one
+% sum(null_diffODratio_cell{6} > emp_diffODratio)
+% 
+% ans =
+% 
+%    423
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% confirm that wsbm still more random than chance
 
@@ -190,6 +197,6 @@ for idx = 1:numPerms
     randq2(idx) = modularity_q(randmio_dir_connected(dat,0.05),cons_ca.wsbm) ;
 end
 
-
+% yes, waaaaay passes bootstrap.
 
 

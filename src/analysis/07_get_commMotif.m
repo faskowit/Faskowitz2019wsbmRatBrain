@@ -5,7 +5,7 @@ clearvars
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% this is where i load data
 
-config_file='config_template_rb2_oneHemi_analyzeGridRuns.m';
+config_file='config_template_rb2_analyzeGridRuns.m';
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 addpath(strcat(pwd,'/config'))
 run(config_file);
@@ -122,7 +122,8 @@ CIJ = baseRes.rawData ;
 % allocate struct
 motifAna = struct() ; 
 
-numLevels = size(baseRes.wsbm.ca_K,1) ;
+% numLevels = size(baseRes.wsbm.ca_K,1) ;
+numLevels = length(REASONABLE_COM_RANGE_IND) ;
 
 for cdx = 1:length(comTypes)
 
@@ -229,7 +230,7 @@ CIJ = baseRes.rawData ;
 % allocate struct
 %motifAna = struct() ; 
 
-numLevels = size(baseRes.wsbm.ca_K,1) ;
+% numLevels = size(baseRes.wsbm.ca_K,1) ;
 
 for cdx = 1:length(comTypes)
 
@@ -342,6 +343,8 @@ for cn = 1:length(commNames)
     entr_K.(commNames{cn}).sum = cell(numLevels,1) ;
     
     for idx = 1:numLevels
+        
+            disp(idx)
         
             tmpMot = motifAna.(commNames{cn}).motifEdgeMats{idx} ;
 

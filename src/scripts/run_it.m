@@ -7,7 +7,7 @@ clearvars
 
 %% config
 
-config_file='config_template_oneHemi.m';
+config_file='config_template.m';
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 addpath(strcat(pwd,'/config'))
 run(config_file);
