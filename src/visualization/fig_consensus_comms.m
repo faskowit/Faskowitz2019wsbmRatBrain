@@ -5,7 +5,7 @@ clearvars
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% load
 
-config_file='config_template_rb2_oneHemi_analyzeGridRuns.m';
+config_file='config_template_rb2_analyzeGridRuns.m';
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 addpath(strcat(pwd,'/config'))
 run(config_file);
@@ -19,7 +19,7 @@ load(loadName) ;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% fig stuff
 
-FIGURE_NAME = 'figComms' ;
+FIGURE_NAME = 'figComms_full' ;
 outputdir = strcat(PROJECT_DIR,'/reports/figures/',FIGURE_NAME,'/');
 mkdir(outputdir) 
 
@@ -75,7 +75,7 @@ set(gca,'ticklength',[ 0 0])
 
 hold off
 
-set(gca,'FontSize',fontsize)
+set(gca,'FontSize',11)
 set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.42, 0.5]);
 pbaspect([1 1 1])
 
@@ -110,14 +110,14 @@ colorbar();
 axis square
 
 hold on
-viz_comms_on_axes((1:10)',comm_cmap)
+viz_comms_on_axes((1:nComm)',comm_cmap)
 
 caxis(ca_lim)
 
 xticks([])
 yticks([]) 
 
-set(gca,'ytick',(1:10))
+set(gca,'ytick',(1:nComm))
 set(gca,'yticklabel',{1:nComm})
 set(gca,'ticklength',[ 0 0]) 
 

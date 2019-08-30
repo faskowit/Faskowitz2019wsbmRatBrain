@@ -5,7 +5,7 @@ clearvars
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% load
 
-config_file='config_template_rb2_oneHemi_analyzeGridRuns.m';
+config_file='config_template_rb2_analyzeGridRuns.m';
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 addpath(strcat(pwd,'/config'))
 run(config_file);
@@ -16,7 +16,7 @@ load(loadName)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% fig stuff
 
-FIGURE_NAME = 'figGener' ;
+FIGURE_NAME = 'figGener_full' ;
 outputdir = strcat(PROJECT_DIR,'/reports/figures/',FIGURE_NAME,'/');
 mkdir(outputdir) 
 
@@ -161,7 +161,7 @@ end
 
 figure
 
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.95, 0.50]);
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.6, 0.4]);
 
 % tight subplot
 % tight_subplot(Nh, Nw, [gap_h gap_w], [lower upper], [left right])
