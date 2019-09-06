@@ -59,7 +59,7 @@ baseRes.mod.bestKcentmod_ca = centCa ;
 baseRes.mod.ca_K = modCas ;
 baseRes.mod.caQs_K = modQs ;
 
-saveName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_baseRes.mat' ] ;
+saveName = [ PROJECT_DIR '/data/processed/' OUTPUT_STR '_' GRID_RUN '_altMod_baseRes.mat' ] ;
 save(saveName,'baseRes') ;
 
 
