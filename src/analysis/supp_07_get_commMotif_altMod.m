@@ -51,8 +51,8 @@ load(loadName) ;
 
 rng(123)
 
-comTypes = { 'mod' } ;
-nComTypes = { 'randM' };
+comTypes = { 'mod' 'wsbm' } ;
+nComTypes = { 'randM' 'randW' };
 
 nNodes = size(baseRes.rawData,1);
 
@@ -61,7 +61,7 @@ for cdx = 1:length(comTypes)
     baseRes.(nComTypes{cdx}).ca_K = cell(length(comTypes),1) ;
     
     % randomize each community strucutre
-    for idx = 1:size(baseRes.wsbm.ca_K,1)
+    for idx = 1:length(REASONABLE_COM_RANGE_IND)
 
         % get the ca_K struct
         tmpCAs = baseRes.(comTypes{cdx}).ca_K{idx} ;
@@ -115,7 +115,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% do the motif analysis
 
-comTypes = { 'mod' 'randM' } ;
+comTypes = { 'mod' 'randM' 'wsbm' 'randW' } ;
 motifVarNAmes = { 'assort' 'core' 'peri' 'disort' } ; 
 CIJ = baseRes.rawData ;
 
@@ -222,8 +222,8 @@ end
 
 rng(123)
 
-iComm = { 'mod' } ;
-comTypes = { 'randblM' } ;
+iComm = { 'mod' 'wsbm' } ;
+comTypes = { 'randblM' 'randblW' } ;
 motifVarNAmes = { 'assort' 'core' 'peri' 'disort' } ; 
 CIJ = baseRes.rawData ;
 
@@ -333,7 +333,7 @@ save(saveName,'CIJ','motifAna','-v7.3') ;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% entropy across K
 
-commNames = { 'mod' 'randM' 'randblM'} ;
+commNames = { 'mod' 'randM' 'randblM' 'wsbm' 'randW' 'randblW' } ;
 
 entr_K = struct() ;
 

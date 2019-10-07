@@ -24,18 +24,18 @@ dat = baseRes.rawData ;
 dat(isnan(dat)) = 0 ;
 
 % initialize a variable
-modCas = cell(length(COM_NUM_RANGE),1) ;
-modQs = cell(length(COM_NUM_RANGE),1) ;
-gammaRange = 0.1:0.005:4 ;
+modCas = cell(length(REASONABLE_COM_RANGE_IND),1) ;
+modQs = cell(length(REASONABLE_COM_RANGE_IND),1) ;
+gammaRange = 0.1:0.005:6 ;
 
-for idx = 1:length(COM_NUM_RANGE)
+for idx = 1:length(REASONABLE_COM_RANGE_IND)
 
     disp([ newline newline num2str(idx) newline newline ])
     
-    Klevel = COM_NUM_RANGE(idx) ;
+    Klevel = REASONABLE_COM_RANGE_IND(idx) ;
     numRuns = size(baseRes.wsbm.ca_K{idx},2) ;
     
-    [modCas{idx},modQs{idx}] = sweep_gamma_louvain_atK(dat, Klevel,gammaRange,numRuns) ;
+    [modCas{idx},modQs{idx}] = sweep_modularity_dir_atK(dat, Klevel,gammaRange,numRuns) ;
 
 end
 
