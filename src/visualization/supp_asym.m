@@ -33,8 +33,8 @@ mod_ca = baseRes.mod.ca_K{ind} ;
 wsbm_diffs = zeros(45,size(wsbm_ca,2)) ;
 mod_diffs = zeros(45,size(wsbm_ca,2)) ;
 
-wsbm_ratio = zeros(size(wsbm_ca,2),1) ;
-mod_ratio = zeros(size(wsbm_ca,2),1) ;
+wsbm_sumdiff = zeros(size(wsbm_ca,2),1) ;
+mod_sumdiff = zeros(size(wsbm_ca,2),1) ;
 
 upp_mask = logical(triu(ones(baseRes.wsbm.bestK),1)) ;
 low_mask = logical(tril(ones(baseRes.wsbm.bestK),-1)) ;
@@ -50,8 +50,8 @@ for idx = 1:size(wsbm_ca,2)
     wsbm_diffs(:,idx) = tmpMat_1(upp_mask) - tmpMat_1(low_mask) ;
     mod_diffs(:,idx) = tmpMat_2(upp_mask) - tmpMat_2(low_mask) ;
     
-    wsbm_ratio(idx) = sum(tmpMat_1(upp_mask)) / sum(tmpMat_1(low_mask)) ;
-    mod_ratio(idx) = sum(tmpMat_2(upp_mask)) / sum(tmpMat_2(low_mask)) ;
+    wsbm_sumdiff(idx) = sum(tmpMat_1(upp_mask)) - sum(tmpMat_1(low_mask)) ;
+    mod_sumdiff(idx) = sum(tmpMat_2(upp_mask)) - sum(tmpMat_2(low_mask)) ;
     
 end
 
@@ -68,7 +68,7 @@ nPerm = 10000 ;
 w_permRes = zeros(45,nPerm) ;
 m_permRes = zeros(45,nPerm) ;
 sz = size(wsbm_ca,2) ;
-ratio_diff = zeros(nPerm,1) ;
+sumdiff_diff = zeros(nPerm,1) ;
 
 for idx = 1:nPerm 
     
@@ -79,13 +79,13 @@ for idx = 1:nPerm
     w_permRes(:,idx) = mean(wsbm_diffs(:,randinds),2) ;
     m_permRes(:,idx) = mean(mod_diffs(:,randinds),2) ;
 
-    ratio_diff(idx) = mean(wsbm_ratio(randinds)) - mean(mod_ratio(randinds)) ;
+    sumdiff_diff(idx) = std(wsbm_sumdiff(randinds)) - std(mod_sumdiff(randinds)) ;
     
 end
 
 %% pvalus on the difference in ratios
 
-pval = (1+ sum(ratio_diff<0)) / (1+nPerm) ;
+pval = (1+ sum(sumdiff_diff<0)) / (1+nPerm) ;
 
 
 %% get the percentiles that don't cross 0
